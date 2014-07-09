@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/Wishing-Wall/btcrpcclient"
-	"log"
-	. "protocol"
+	//"github.com/Wishing-Wall/btcrpcclient"
+	//"log"
+	//. "protocol"
 )
 
 func main() {
@@ -31,5 +31,5 @@ func main() {
 			log.Printf("%s: %s", label, amount)
 		}
 	***/
-	block()
+	//Block()
 }
