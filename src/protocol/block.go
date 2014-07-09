@@ -5,15 +5,18 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/Wishing-Wall/go-sqlite3"
-	//"log"
+	"logger"
 )
 
 func init() {
-	_, err := sql.Open("sqlite3", DATABASEPATH+"block.db")
+	db, err := sql.Open("sqlite3", DATABASEPATH+"block.db")
 	if err != nil {
-		fmt.Println("open block.db failed")
-	} else {
-		fmt.Println("open block.db succeed")
+		logger.Errorln("open block.db failed")
 	}
+	defer db.Close()
 
+	_,err = db.Exec(DATABASE_CREATE_BLOCK)
+	if err!=nil{
+		logger.Errorln("Create table blocks failed")
+	}
 }

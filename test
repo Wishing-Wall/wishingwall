@@ -11,13 +11,9 @@ CURDIR=`pwd`
 OLDGOPATH="$GOPATH"
 export GOPATH="$CURDIR:$CURDIR/thirdparty"
 
-if [ ! -d log ]; then
-    mkdir log
-fi
-
 gofmt -w src
 
-go test
+go test logger
 
 export GOPATH="$OLDGOPATH"
 export PATH="$OLDPATH"

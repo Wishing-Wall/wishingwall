@@ -26,8 +26,10 @@ func New(out io.Writer) *logger {
 }
 
 func Errorln(args ...interface{}) {
-	file, err := os.OpenFile(ERRORPATH, os.O_RDWR|os.O_CREATE|os.O_APPEND, 644)
+	fmt.Println("ERRORPATH ", ERRORPATH)
+	file, err := os.OpenFile(ERRORPATH, os.O_RDWR|os.O_CREATE|os.O_APPEND, 666)
 	if err != nil {
+		log.Println("create errorlog file failed")
 		return
 	}
 	defer file.Close()
@@ -36,10 +38,10 @@ func Errorln(args ...interface{}) {
 		args = append([]interface{}{"[", filepath.Base(callerFile), "]", line}, args...)
 	}
 	New(file).Println(args...)
-	log.Println(args...)
+
 }
 func Debugln(args ...interface{}) {
-	file, err := os.OpenFile(DEBUGPATH, os.O_RDWR|os.O_CREATE|os.O_APPEND, 644)
+	file, err := os.OpenFile(DEBUGPATH, os.O_RDWR|os.O_CREATE|os.O_APPEND, 666)
 	if err != nil {
 		return
 	}
@@ -49,6 +51,5 @@ func Debugln(args ...interface{}) {
 		args = append([]interface{}{"[", filepath.Base(callerFile), "]", line}, args...)
 	}
 	New(file).Println(args...)
-	log.Println(args...)
 
 }
