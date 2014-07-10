@@ -15,8 +15,8 @@ func init() {
 	}
 	defer db.Close()
 
-	_,err = db.Exec(DATABASE_CREATE_BLOCK)
-	if err!=nil{
+	_, err = db.Exec(DATABASE_CREATE_BLOCK)
+	if err != nil {
 		logger.Errorln("Create table blocks failed")
 	}
 }

@@ -2,7 +2,7 @@ package logger
 
 import (
 	. "config"
-	"fmt"
+	//"fmt"
 	"io"
 	"log"
 	"os"
@@ -26,7 +26,6 @@ func New(out io.Writer) *logger {
 }
 
 func Errorln(args ...interface{}) {
-	fmt.Println("ERRORPATH ", ERRORPATH)
 	file, err := os.OpenFile(ERRORPATH, os.O_RDWR|os.O_CREATE|os.O_APPEND, 666)
 	if err != nil {
 		log.Println("create errorlog file failed")
