@@ -2,6 +2,7 @@ package dbutil
 
 import (
 	. "config"
+	"logger"
 	"testing"
 )
 
@@ -28,5 +29,15 @@ func TestCreateTable(t *testing.T) {
 		} else {
 			return
 		}
+	}
+}
+
+func TestLastBlockIndex(t *testing.T) {
+	block_index, err := LastBlockIndex()
+	logger.Debugln("block_index ", block_index)
+	if err != nil {
+		t.Fail()
+	} else  {
+		return
 	}
 }

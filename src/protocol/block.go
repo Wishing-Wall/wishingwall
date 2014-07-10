@@ -2,21 +2,38 @@ package protocol
 
 import (
 	. "config"
-	"database/sql"
+
+	"dbutil"
 	"fmt"
-	_ "github.com/Wishing-Wall/go-sqlite3"
 	"logger"
 )
 
 func init() {
-	db, err := sql.Open("sqlite3", DATABASEPATH+"block.db")
-	if err != nil {
-		logger.Errorln("open block.db failed")
+	tables := [...]string{
+		DATABASE_CREATE_BLOCK,
+		DATABASE_CREATE_BLOCK_INDEX,
+		DATABASE_CREATE_BLOCK_HASH_INDEX,
+		DATABASE_TRANSACTION,
+		DATABASE_CREATE_TRANSACTION_INDEX,
+		DATABASE_CREATE_TRANSACTION_INDEX2,
+		DATABASE_CREATE_TRANSACTION_INDEX3,
+		DATABASE_CREATE_TRANSACTION_INDEX4,
+		DATABASE_CREATE_MESSAGE,
+		DATABASE_CREATE_MESSAGE_INDEX,
+		DATABASE_CREATE_MESSAGE_INDEX1,
+		DATABASE_CREATE_MESSAGE_INDEX2,
+		DATABASE_CREATE_MESSAGE_INDEX3,
 	}
-	defer db.Close()
+	for _, v := range tables {
+		err := CreateTable(DATABASEPATH, v)
+		if err != nil {
+			t.Fail()
+		} else {
+			return
+		}
+	}
+}
 
-	_, err = db.Exec(DATABASE_CREATE_BLOCK)
-	if err != nil {
-		logger.Errorln("Create table blocks failed")
-	}
+func Follow() {
+	logger.Infoln("Start...")
 }

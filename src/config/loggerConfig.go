@@ -7,3 +7,4 @@ package config
 const LOGPATH string = "./log/"
 const ERRORPATH string = LOGPATH + "error.log"
 const DEBUGPATH string = LOGPATH + "debug.log"
+const INFOPATH string = LOGPATH + "info.log"

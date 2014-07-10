@@ -52,3 +52,17 @@ func Debugln(args ...interface{}) {
 	New(file).Println(args...)
 
 }
+
+func Infoln(args ...interface{}) {
+	file, err := os.OpenFile(DEBUGPATH, os.O_RDWR|os.O_CREATE|os.O_APPEND, 666)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+	_, callerFile, line, ok := runtime.Caller(1)
+	if ok {
+		args = append([]interface{}{"[", filepath.Base(callerFile), "]", line}, args...)
+	}
+	New(file).Println(args...)
+
+}
