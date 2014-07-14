@@ -26,10 +26,9 @@ func TestCreateTable(t *testing.T) {
 		err := CreateTable(DATABASEPATH, v)
 		if err != nil {
 			t.Fail()
-		} else {
-			return
 		}
 	}
+	return
 }
 
 func TestLastBlockIndex(t *testing.T) {
@@ -37,7 +36,17 @@ func TestLastBlockIndex(t *testing.T) {
 	logger.Debugln("block_index ", block_index)
 	if err != nil {
 		t.Fail()
-	} else  {
+	} else {
+		return
+	}
+}
+
+func TestListLastTran(t *testing.T) {
+	dbtran, err := ListLastTran()
+	logger.Debugln("dbtran ", dbtran)
+	if err != nil {
+		t.Fail()
+	} else {
 		return
 	}
 }

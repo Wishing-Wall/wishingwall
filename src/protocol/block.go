@@ -35,5 +35,23 @@ func init() {
 }
 
 func Follow() {
-	logger.Infoln("Start...")
+	logger.Infoln("Start... ")
+	//	block_index,err := dbutil.LastBlockIndex()
+	//		if err != nil{
+	//			logger.Errorln("Get lastblockindex failed")
+	//			return
+	//		}
+	//		if block_index == 0{
+	//			logger.Debugln("block table in database is empty")
+	//		}
+	//		block_index ++
+	//
+	//		var dbtran DBTransaction
+	//		dbtran,err = ListLastTran()
+	//		if err!=nil{
+	//			logger.Debugln("ListLastTran error")
+	//		}
+	//		logger.Debugln("dbtran.Tx_index=",dbtran.Tx_index)
+	//		tx_index := dbtran.Tx_index + 1
+
 }
