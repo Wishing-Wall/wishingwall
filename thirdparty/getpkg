@@ -13,7 +13,7 @@ export GOPATH=`pwd`
 #go get -u github.com/go-martini/martini
 #go get -u github.com/codegangsta/martini-contrib/auth
 #go get -u github.com/philsong/goleveldb/leveldb
-go get -u github.com/Wishing-Wall/btcrpcclient
+#go get -u github.com/Wishing-Wall/btcrpcclient
 go get -u github.com/Wishing-Wall/go-sqlite3
 export GOPATH="$OLDGOPATH"
 export PATH="$OLDPATH"

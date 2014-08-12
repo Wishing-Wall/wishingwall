@@ -4,11 +4,14 @@
  */
 package config
 
-const DATABASEPATH string = "./database/database.db"
+//const DATABASEPATH string = "./database/database.db"
+const DATABASEPATH string = "/home/johnson/golang/wishingwall/wishingwall/database/database.db"
 
+//blocks
 const DATABASE_CREATE_BLOCK string = "CREATE TABLE IF NOT EXISTS blocks (" +
 	"block_index INTEGER UNIQUE," +
 	"block_hash TEXT UNIQUE," +
+	"block_prev_hash TEXT UNIQUE," +
 	"block_time INTEGER," +
 	"PRIMARY KEY (block_index,block_hash))"
 const DATABASE_CREATE_BLOCK_INDEX string = "CREATE INDEX IF NOT EXISTS " +
@@ -16,6 +19,7 @@ const DATABASE_CREATE_BLOCK_INDEX string = "CREATE INDEX IF NOT EXISTS " +
 const DATABASE_CREATE_BLOCK_HASH_INDEX string = "CREATE INDEX IF NOT EXISTS " +
 	"index_hash_idx ON blocks (block_index, block_hash)"
 
+//transactions
 const DATABASE_TRANSACTION string = "CREATE TABLE IF NOT EXISTS transactions (" +
 	"tx_index INTEGER UNIQUE," +
 	"tx_hash TEXT UNIQUE," +
@@ -39,6 +43,7 @@ const DATABASE_CREATE_TRANSACTION_INDEX3 string = "CREATE INDEX IF NOT EXISTS " 
 const DATABASE_CREATE_TRANSACTION_INDEX4 string = "CREATE INDEX IF NOT EXISTS " +
 	"index_hash_idx ON transactions (tx_index,tx_hash,block_index)"
 
+//message
 const DATABASE_CREATE_MESSAGE string = "CREATE TABLE IF NOT EXISTS message (" +
 	"message_index INTEGER," +
 	"block_index INTEGER," +
@@ -62,10 +67,13 @@ const DATABASE_CREATE_MESSAGE_INDEX2 string = "CREATE INDEX IF NOT EXISTS " +
 const DATABASE_CREATE_MESSAGE_INDEX3 string = "CREATE INDEX IF NOT EXISTS " +
 	"destination_idx ON message (destination)"
 
+const BLOCKFIRST uint64 = 1
+const WISHINGWALLADDRESS string = "DLHV2GJrDL5M9atZ49BZ6DKwZhDWFEZfxw"
+
 type DBTransaction struct {
 	Tx_index    uint64
 	Tx_hash     string
-	Block_index uint64
+	Block_index int64
 	Block_hash  string
 	Block_time  uint64
 	Source      string
@@ -74,4 +82,10 @@ type DBTransaction struct {
 	Fee         uint64
 	Data        string
 	Supported   bool
+}
+type DBBlocks struct {
+	Block_index     int64
+	Block_hash      string
+	Block_prev_hash string
+	Block_time      uint64
 }

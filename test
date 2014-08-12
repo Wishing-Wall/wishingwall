@@ -14,8 +14,9 @@ export GOPATH="$CURDIR:$CURDIR/thirdparty"
 gofmt -w src
 
 #go test logger
-go test db
-
+#go test db
+go test rpc
+#go test protocol
 export GOPATH="$OLDGOPATH"
 export PATH="$OLDPATH"
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	//"github.com/Wishing-Wall/btcrpcclient"
 	//"log"
-	//. "protocol"
+	. "protocol"
 )
 
 func main() {
@@ -31,5 +31,5 @@ func main() {
 			log.Printf("%s: %s", label, amount)
 		}
 	***/
-	//Block()
+	Follow()
 }
