@@ -2,7 +2,7 @@ package protocol
 
 import (
 	. "config"
-	"db"
+	"dbutil"
 	//"fmt"
 	"logger"
 )
@@ -24,7 +24,7 @@ func init() {
 		DATABASE_CREATE_MESSAGE_INDEX3,
 	}
 	for _, v := range tables {
-		err := db.CreateTable(DATABASEPATH, v)
+		err := dbutil.CreateTable(DATABASEPATH, v)
 		if err != nil {
 			logger.Errorln("failed to create table ", v)
 		}
@@ -34,7 +34,7 @@ func init() {
 func Follow() {
 	logger.Infoln("Start... ")
 	var block_index uint64
-	block_index, err := db.LastBlockIndex()
+	block_index, err := dbutil.LastBlockIndex()
 	if err != nil {
 		logger.Errorln("Get lastblockindex failed")
 		return
@@ -43,15 +43,16 @@ func Follow() {
 		logger.Debugln("block table in database is empty")
 	}
 	block_index++
+	/*
+			var dbtran DBTransaction
+			dbtran, err = dbutil.GetLastTran()
+			if err != nil {
+				logger.Debugln("GetLastTran error")
+			}
+			logger.Debugln("dbtran=", dbtran)
 
-	var dbtran DBTransaction
-	dbtran, err = db.GetLastTran()
-	if err != nil {
-		logger.Debugln("GetLastTran error")
-	}
-	logger.Debugln("dbtran=", dbtran)
-
-	tx_index := dbtran.Tx_index + 1
+		tx_index := dbtran.Tx_index + 1
+	*/
 	/*
 		for {
 			if block_index <= rpc.GetBlockCount() {
@@ -64,7 +65,7 @@ func Follow() {
 					}
 					c_block,_ := rpc.GetBlockByIndex(c)
 					bitcoind_parent = c_block.PreviousHash
-					block,_ :=db.GetBlock(c-1)
+					block,_ :=dbutil.GetBlock(c-1)
 					if len(blocks) !=1{
 						break
 					}
@@ -78,7 +79,7 @@ func Follow() {
 				}
 				if requires_rollback{
 					logger.Debugln("status:Blockchain reorganisation at block {}", c)
-					db.Reparse(c-1)
+					dbutil.Reparse(c-1)
 					block_index = c
 					continue
 				}
@@ -86,9 +87,9 @@ func Follow() {
 				block:=bitcoin.GetBlock(block_hash)
 				block_time := block.Time
 				tx_hash_list :=block.Tx
-				db.InsertBlock(block_index,block_hash,block_time)
+				dbutil.InsertBlock(block_index,block_hash,block_time)
 				for tx_hash in tx_hash_list{
-					blocks := db.GetTran(tx_hash)
+					blocks := dbutil.GetTran(tx_hash)
 					if blocks{
 						tx_index += 1
 						continue
@@ -97,7 +98,7 @@ func Follow() {
 					logger.Debugln("Status: examining transaction ",tx_hash)
 					source ,destination,btc_amount,fee,data := get_tx_info(tx,block_index)
 					if source and (data or destination == WISHINGWALLADDRESS){
-						db.InsertTran(tx_index,tx_hash,block_index,block_hash,block_time,source,destination,btc_amount,fee,data)
+						dbutil.InsertTran(tx_index,tx_hash,block_index,block_hash,block_time,source,destination,btc_amount,fee,data)
 
 					}
 					tx_index +=1
