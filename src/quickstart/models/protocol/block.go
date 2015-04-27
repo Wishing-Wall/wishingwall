@@ -1,9 +1,11 @@
 package protocol
 
 import (
+	"fmt"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/mattn/go-sqlite3"
 	. "quickstart/conf"
+	"time"
 )
 
 func init() {
@@ -13,6 +15,16 @@ func init() {
 }
 
 func Follow() {
+	o := orm.NewOrm()
+	o.Using("default")
+	var i uint64 = 0
+	for {
+		message := new(DB_message)
+		message.Block_index = i
+		i++
+		fmt.Println(o.Insert(message))
+		time.Sleep(10 * time.Second)
+	}
 	/*
 		logger.Infoln("Start... ")
 		var block_index uint64

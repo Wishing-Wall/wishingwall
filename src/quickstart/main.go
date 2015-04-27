@@ -3,11 +3,11 @@ package main
 import (
 	_ "fmt"
 	"github.com/astaxie/beego"
-	_ "quickstart/models/protocol"
+	. "quickstart/models/protocol"
 	_ "quickstart/routers"
 )
 
 func main() {
-
+	go Follow()
 	beego.Run()
 }
