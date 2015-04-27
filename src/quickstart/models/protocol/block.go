@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/mattn/go-sqlite3"
+
 	. "quickstart/conf"
+	"strconv"
 	"time"
 )
 
@@ -14,13 +16,15 @@ func init() {
 	orm.RunSyncdb("default", false, true)
 }
 
+var i uint64 = 0
+
 func Follow() {
 	o := orm.NewOrm()
 	o.Using("default")
-	var i uint64 = 0
 	for {
 		message := new(DB_message)
 		message.Block_index = i
+		message.Message = "hello " + strconv.FormatUint(i, 10)
 		i++
 		fmt.Println(o.Insert(message))
 		time.Sleep(10 * time.Second)
