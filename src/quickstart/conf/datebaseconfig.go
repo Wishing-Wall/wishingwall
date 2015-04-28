@@ -23,6 +23,17 @@ type DB_message struct {
 	Destination   string
 	Message       string
 }
+type DB_messages []DB_message
+
+func (l DB_messages) Len() int {
+	return len(l)
+}
+func (l DB_messages) Less(i, j int) bool {
+	return l[i].Id < l[j].Id
+}
+func (l DB_messages) Swap(i, j int) {
+	l[i], l[j] = l[j], l[i]
+}
 
 type DB_transaction struct {
 	Id          int

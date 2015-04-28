@@ -75,11 +75,9 @@
 
 <body>
   <header>
-    <h1 class="logo">Welcome to Beego</h1>
-    <div class="description">
-      Beego is a simple & powerful Go web framework which is inspired by tornado and sinatra.
-    </div>
-	<h2 class="Message">{{.Message}} </h1>
+	{{range $key, $val := .messages}}
+		<h{{$key}}>{{$val.Message}}</h{{$key}}>
+	{{end}}
   </header>>
   <footer>
     <div class="author">

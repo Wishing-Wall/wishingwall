@@ -16,11 +16,12 @@ func init() {
 	orm.RunSyncdb("default", false, true)
 }
 
-var i uint64 = 0
-
 func Follow() {
 	o := orm.NewOrm()
 	o.Using("default")
+	var i uint64
+	o.Raw("select count(*) from d_b_message").QueryRow(&i)
+	i++
 	for {
 		message := new(DB_message)
 		message.Block_index = i
