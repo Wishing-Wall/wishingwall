@@ -12,6 +12,11 @@ type MainController struct {
 	beego.Controller
 }
 
+func (c *MainController) Post() {
+	fmt.Printf("Post method %v\n", c.GetString("clientmessage"))
+	c.Ctx.Redirect(301, "addr")
+}
+
 func (c *MainController) Get() {
 	o := orm.NewOrm()
 	o.Using("default")
@@ -43,4 +48,12 @@ func (c *MainController) Get() {
 	//fmt.Printf("message after sort %v\n", messages)
 	c.Data["messages"] = messages
 	c.TplNames = "index.tpl"
+}
+
+type ShowAddrController struct {
+	beego.Controller
+}
+
+func (c *ShowAddrController) Get() {
+	c.TplNames = "showaddr.tpl"
 }

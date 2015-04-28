@@ -75,11 +75,17 @@
 
 <body>
   <header>
-	<META HTTP-EQUIV="REFRESH" CONTENT="5"> 
+	<!-- META HTTP-EQUIV="REFRESH" CONTENT="5" --> 
 	{{range $key, $val := .messages}}
 		<h{{$key}}>{{$val.Message}}</h{{$key}}>
 	{{end}}
   </header>>
+  <body>
+       <form method="post">
+	      text:<input type="text" name="clientmessage">
+		  <input type="submit" value="submit">
+
+  </body>
   <footer>
     <div class="author">
       Official website:
