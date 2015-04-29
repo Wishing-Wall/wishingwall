@@ -12,7 +12,7 @@ import (
 
 func init() {
 	orm.RegisterDataBase("default", "sqlite3", DATABASEPATH)
-	orm.RegisterModel(new(DB_message), new(DB_transaction), new(DB_blocks))
+	orm.RegisterModel(new(DB_message), new(DB_transaction), new(DB_blocks), new(DB_send))
 	orm.RunSyncdb("default", false, true)
 }
 

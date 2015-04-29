@@ -57,3 +57,13 @@ type DB_blocks struct {
 	Block_prev_hash string
 	Block_time      uint64
 }
+
+type DB_send struct {
+	Id           int
+	RelayAddr    string
+	Message      string
+	ConfirmTimes int
+	CheckTimes   int
+	IsSent       bool
+	Succeed      bool
+}

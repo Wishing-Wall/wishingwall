@@ -13,7 +13,18 @@ type MainController struct {
 }
 
 func (c *MainController) Post() {
-	fmt.Printf("Post method %v\n", c.GetString("clientmessage"))
+	o := orm.NewOrm()
+	o.Using("default")
+	// get Relaye addr
+	send := new(DB_send)
+	send.Message = c.GetString("clientmessage")
+	fmt.Printf("client message is %v", send.Message)
+	send.RelayAddr = send.Message + "testaddr"
+	send.ConfirmTimes = 0
+	send.CheckTimes = 0
+	send.IsSent = false
+	send.Succeed = false
+	o.Insert(send)
 	c.Ctx.Redirect(301, "addr")
 }
 
