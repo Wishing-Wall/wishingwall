@@ -2,33 +2,16 @@ package protocol
 
 import (
 	"fmt"
-	"github.com/astaxie/beego/orm"
-	_ "github.com/mattn/go-sqlite3"
-
-	. "quickstart/conf"
-	"strconv"
+	"quickstart/models/dbutil"
 	"time"
 )
 
-func init() {
-	orm.RegisterDataBase("default", "sqlite3", DATABASEPATH)
-	orm.RegisterModel(new(DB_message), new(DB_transaction), new(DB_blocks), new(DB_send))
-	orm.RunSyncdb("default", false, true)
-}
-
 func Follow() {
-	o := orm.NewOrm()
-	o.Using("default")
-	var i uint64
-	o.Raw("select count(*) from d_b_message").QueryRow(&i)
-	i++
+	go dbutil.DebugInsert()
 	for {
-		message := new(DB_message)
-		message.Block_index = i
-		message.Message = "hello " + strconv.FormatUint(i, 10)
-		i++
-		fmt.Println(o.Insert(message))
-		time.Sleep(10 * time.Second)
+
+		fmt.Printf("get lastblockindex is %d", dbutil.LastBlockIndex())
+		time.Sleep(time.Second * 8)
 	}
 	/*
 		logger.Infoln("Start... ")
