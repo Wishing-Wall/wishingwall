@@ -6,8 +6,11 @@ package conf
 
 const DATABASEPATH string = "./database.db"
 
-const BLOCKFIRST uint64 = 1
+const BLOCK_FIRST uint64 = 1
 const WISHINGWALLADDRESS string = "DLHV2GJrDL5M9atZ49BZ6DKwZhDWFEZfxw"
+
+//runtime variable
+var CURRENT_BLOCK_INDEX uint64
 
 //tables
 type DB_message struct {
@@ -39,7 +42,7 @@ type DB_transaction struct {
 	Id          int
 	Tx_index    uint64
 	Tx_hash     string
-	Block_index int64
+	Block_index uint64
 	Block_hash  string
 	Block_time  uint64
 	Source      string

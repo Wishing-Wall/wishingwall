@@ -9,9 +9,12 @@ import (
 func Follow() {
 	go dbutil.DebugInsert()
 	for {
+		block_index, err := dbutil.LastBlockIndex()
+		fmt.Printf("block_index =%d, err=%v\n", block_index, err)
+		tran, err := dbutil.GetLastTran()
+		fmt.Printf("last tran = %v, err=%v\n", tran, err)
 
-		fmt.Printf("get lastblockindex is %d", dbutil.LastBlockIndex())
-		time.Sleep(time.Second * 8)
+		time.Sleep(10 * time.Second)
 	}
 	/*
 		logger.Infoln("Start... ")
