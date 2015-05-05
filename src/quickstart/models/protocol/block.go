@@ -13,6 +13,11 @@ func Follow() {
 		fmt.Printf("block_index =%d, err=%v\n", block_index, err)
 		tran, err := dbutil.GetLastTran()
 		fmt.Printf("last tran = %v, err=%v\n", tran, err)
+		block, err := dbutil.GetBlock(block_index - 2)
+		fmt.Printf("block %d is %v\n", block_index-2, block)
+
+		tran, err = dbutil.GetTran("test_tx_hash" + fmt.Sprintf("%d", block_index-1))
+		fmt.Printf("get tran by hash %v, %v\n", tran, err)
 
 		time.Sleep(10 * time.Second)
 	}
