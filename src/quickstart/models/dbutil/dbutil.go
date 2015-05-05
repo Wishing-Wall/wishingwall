@@ -38,6 +38,11 @@ func DebugInsert() {
 			i, "test_source"+fmt.Sprintf("%d", i),
 			"test_destination"+fmt.Sprintf("%d", i),
 			i, i, "test_data"+fmt.Sprintf("%d", i))
+		InsertTran(i+1, "test_tx_hash"+fmt.Sprintf("%d", i),
+			i, "test_block_hash"+fmt.Sprintf("%d", i),
+			i, "test_source"+fmt.Sprintf("%d", i),
+			"test_destination"+fmt.Sprintf("%d", i),
+			i, i, "test_data"+fmt.Sprintf("%d", i))
 
 		time.Sleep(10 * time.Second)
 	}
@@ -102,7 +107,30 @@ func InsertTran(tx_index uint64, tx_hash string, block_index uint64,
 	tran.Data = data
 	_, err := myorm.Insert(tran)
 	return err
+}
 
+func GetAllTransInBlock(block_index uint64) ([]DB_transaction, error) {
+	var trans []DB_transaction
+	num, err := myorm.Raw("select * from d_b_transaction "+
+		"where block_index=? order by tx_index", block_index).QueryRows(&trans)
+	if err != nil {
+		fmt.Printf("Failed to get trans in block %d %v\n", block_index, err)
+		return trans, err
+	}
+	fmt.Printf("get %d trans in block %d\n", num, block_index)
+	return trans, err
+}
+
+func GetAllBlocks() ([]DB_blocks, error) {
+	var blocks []DB_blocks
+	num, err := myorm.
+		Raw("SELECT * FROM d_b_blocks ORDER BY block_index").
+		QueryRows(&blocks)
+	if err != nil {
+		fmt.Printf("Failed to get all blocks %v\n", err)
+	}
+	fmt.Printf("Get all blocks in total %d\n", num)
+	return blocks, err
 }
 
 func GetBlock(block_index uint64) (DB_blocks, error) {
@@ -122,4 +150,23 @@ func InsertBLock(block_index uint64, block_hash string, block_time uint64) error
 	block.Block_time = block_time
 	_, err := myorm.Insert(block)
 	return err
+}
+
+func Reinitialise(block_index uint64) error {
+	//initialise(db) create missing tables
+	if block_index != 0 {
+		_, err := myorm.Raw("DELETE FROM d_b_transaction WHERE block_index > ?", block_index).Exec()
+		if err != nil {
+			fmt.Printf("Failed to delete from block_index %d in db_block\n", block_index)
+		}
+		_, err = myorm.Raw("DELETE FROM d_b_blocks WHERE block_index > ?", block_index).Exec()
+		if err != nil {
+			fmt.Printf("Failed to delete from block_index %d in transaction\n", block_index)
+		}
+		_, err = myorm.Raw("delete from d_b_message where block_index > ?", block_index).Exec()
+		if err != nil {
+			fmt.Printf("Faield to delete from block_index %d, in db_message\n", block_index)
+		}
+	}
+	return nil
 }
