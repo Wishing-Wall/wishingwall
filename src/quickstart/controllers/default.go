@@ -39,18 +39,7 @@ func (c *MainController) Get() {
 		min = 0
 	}
 	var messages DB_messages
-	o.Raw("select id,"+
-		"Message_index,"+
-		"Block_index,"+
-		"Block_hash,"+
-		"Block_time,"+
-		"Tx_index,"+
-		"Tx_hash,"+
-		"Account,"+
-		"Source,"+
-		"Destination,"+
-		"Message "+
-		"from d_b_message where id >= ? and id <= ?", min, count).QueryRows(&messages)
+	o.Raw("select * from d_b_message where id >= ? and id <= ?", min, count).QueryRows(&messages)
 
 	c.Data["Website"] = "beego.me"
 	c.Data["Email"] = "astaxie@gmail.com"

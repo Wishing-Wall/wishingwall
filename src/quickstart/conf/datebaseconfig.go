@@ -15,16 +15,15 @@ var CURRENT_BLOCK_INDEX uint64
 //tables
 type DB_message struct {
 	Id            int
-	Message_index uint64
-	Block_index   uint64
-	Block_hash    string
-	Block_time    uint64
-	Tx_index      uint64
-	Tx_hash       string
-	Account       string
-	Source        string
-	Destination   string
-	Message       string
+	Message_count uint64 //the message_count in tran.Data
+
+	Block_index_list string
+	Tx_index_list    string
+	Tx_hash_list     string
+	Account          uint64
+	Source           string // a unique symbol for a DB_message
+	Destination      string
+	Message          string //the combine of message_body in many tran.Data
 }
 type DB_messages []DB_message
 

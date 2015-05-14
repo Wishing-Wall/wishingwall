@@ -7,6 +7,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	. "quickstart/conf"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -22,28 +23,20 @@ func init() {
 
 func DebugInsert() {
 	var i uint64
-	myorm.Raw("select count(*) from d_b_message").QueryRow(&i)
+	myorm.Raw("select count(*) from d_b_blocks").QueryRow(&i)
 	i++
 	for {
-		message := new(DB_message)
-		message.Block_index = i
-		message.Message = "hello " + strconv.FormatUint(i, 10)
+		var j uint64 = 1
+		InsertBlock(i, "block hash", i)
+		InsertTran(j, "tx hash", i, "block hash", i, "thesamesource",
+			WISHINGWALLADDRESS, 1, 1, "21I Love You ")
+		InsertTran(j+1, "tx hash", i, "block hash", i, "secondsource",
+			WISHINGWALLADDRESS, 1, 1, "21I Love You ")
+		InsertTran(j+2, "tx hash", i, "block hash", i, "thesamesource",
+			WISHINGWALLADDRESS, 1, 1, "22HUOHUO")
+		InsertTran(j+3, "tx hash", i, "block hash", i, "secondsource",
+			WISHINGWALLADDRESS, 1, 1, "22XIAO BAO BEI")
 		i++
-		fmt.Println(myorm.Insert(message))
-
-		InsertBLock(i, "test_hello_"+fmt.Sprintf("%d", i), i)
-
-		InsertTran(i, "test_tx_hash"+fmt.Sprintf("%d", i),
-			i, "test_block_hash"+fmt.Sprintf("%d", i),
-			i, "test_source"+fmt.Sprintf("%d", i),
-			"test_destination"+fmt.Sprintf("%d", i),
-			i, i, "test_data"+fmt.Sprintf("%d", i))
-		InsertTran(i+1, "test_tx_hash"+fmt.Sprintf("%d", i),
-			i, "test_block_hash"+fmt.Sprintf("%d", i),
-			i, "test_source"+fmt.Sprintf("%d", i),
-			"test_destination"+fmt.Sprintf("%d", i),
-			i, i, "test_data"+fmt.Sprintf("%d", i))
-
 		time.Sleep(10 * time.Second)
 	}
 }
@@ -143,12 +136,42 @@ func GetBlock(block_index uint64) (DB_blocks, error) {
 	}
 	return blocks[0], nil
 }
-func InsertBLock(block_index uint64, block_hash string, block_time uint64) error {
+func InsertBlock(block_index uint64, block_hash string, block_time uint64) error {
 	block := new(DB_blocks)
 	block.Block_index = block_index
 	block.Block_hash = block_hash
 	block.Block_time = block_time
 	_, err := myorm.Insert(block)
+	return err
+}
+
+func GetLastMessageIndex() (int, error) {
+	var i int
+	err := myorm.Raw("Select count(*) from d_b_message").QueryRow(&i)
+	return i, err
+}
+
+func CheckWhetherRecord(tran DB_transaction) bool {
+	var messages []DB_message
+
+	num, err := myorm.Raw("select * from d_b_message where source = ?",
+		tran.Source).QueryRows(&messages)
+	if err == nil && num == 0 {
+		return false
+	}
+	for _, message := range messages {
+		if strings.Contains(message.Block_index_list, "-"+strconv.FormatUint(tran.Block_index, 10)) &&
+			strings.Contains(message.Tx_index_list, "-"+strconv.FormatUint(tran.Tx_index, 10)) &&
+			strings.Contains(message.Tx_hash_list, "-"+tran.Tx_hash) {
+			return true
+		}
+	}
+	return false
+
+}
+
+func InsertMessage(dbmessage DB_message) error {
+	_, err := myorm.Insert(&dbmessage)
 	return err
 }
 

@@ -1,43 +1,147 @@
 package protocol
 
 import (
+	"errors"
 	"fmt"
 	"quickstart/conf"
 	"quickstart/models/dbutil"
+	"strconv"
 	"time"
 )
+
+type poll struct {
+	Message_count uint64
+	Message_index uint64
+	Block_index   uint64
+	Tx_index      uint64
+	Tx_hash       string
+	Account       uint64
+	Source        string
+	Destination   string
+	Message       string
+}
+type polls []poll
+
+var message_pool []polls
+
+func UpdateMessagePool(messageS polls) ([]polls, error) {
+	var newpolls []polls
+	var bFound bool = false
+	for _, value := range message_pool {
+		if value[0].Source == messageS[0].Source {
+			newpolls = append(newpolls, messageS)
+			bFound = true
+		} else {
+			newpolls = append(newpolls, value)
+		}
+	}
+	if false == bFound {
+		newpolls = append(newpolls, messageS)
+	}
+	return newpolls, nil
+}
+
+func GetMessageFromPoolBySource(source string) (polls, error) {
+	fmt.Printf("the message_pool is %T, %v\n", message_pool, message_pool)
+	for _, messageS := range message_pool {
+		for _, message := range messageS {
+			if source == message.Source {
+				return messageS, nil
+			}
+		}
+	}
+	var temp polls
+	return temp, errors.New("can't find")
+}
+
+func DeleteMessageFromPoolBySource(source string) ([]polls, error) {
+	var temp []polls
+	for _, messageS := range message_pool {
+		if messageS[0].Source != source {
+			temp = append(temp, messageS)
+		}
+	}
+	return temp, nil
+}
+
+//tran.Data  [message_count][message_index][message_body]
+
+func GetMessageFromData(data string) (message_count,
+	message_index uint64, message_body string) {
+
+	message_count = uint64(data[0] - '0')
+	message_index = uint64(data[1] - '0')
+	message_body = data[2:]
+	return message_count, message_index, message_body
+}
+
+func Parse_tx(tran conf.DB_transaction) error {
+	if tran.Destination == conf.WISHINGWALLADDRESS {
+		//fmt.Printf("before call GetMEssageBySource\n")
+		bAlready := dbutil.CheckWhetherRecord(tran)
+		if bAlready {
+			return nil
+		}
+		//_, err := dbutil.GetMessageBySource(tran.Source)
+		//fmt.Printf("GetMessage return err = %v\n", err)
+		//if nil == err {
+		////	fmt.Printf("return from parse_tx\n")
+		//	return nil
+		//}
+		message_count, message_index, message_body := GetMessageFromData(tran.Data)
+		fmt.Printf("get from data count=%d, index =%d body=%s\n", message_count, message_index, message_body)
+		//like a temporary storage
+		var message poll
+		message.Source = tran.Source
+		message.Destination = tran.Destination
+		message.Message_count = message_count
+		message.Message_index = message_index
+		message.Message = message_body
+		message.Block_index = tran.Block_index
+		message.Tx_index = tran.Tx_index
+		message.Tx_hash = tran.Tx_hash
+		message.Account = tran.Btc_amount
+
+		messageS, _ := GetMessageFromPoolBySource(tran.Source)
+		messageS = append(messageS, message)
+		fmt.Printf("message len=%d, should be %d\n", len(messageS), messageS[0].Message_count)
+		if messageS[0].Message_count == uint64(len(messageS)) {
+			//insert to db
+			var dbmessage conf.DB_message
+			dbmessage.Message_count = messageS[0].Message_count
+			dbmessage.Source = messageS[0].Source
+			dbmessage.Destination = messageS[0].Destination
+			for _, message := range messageS {
+				dbmessage.Block_index_list = dbmessage.Block_index_list + "-" +
+					strconv.FormatUint(message.Block_index, 10)
+				dbmessage.Tx_index_list = dbmessage.Tx_index_list + "-" +
+					strconv.FormatUint(message.Tx_index, 10)
+				dbmessage.Tx_hash_list = dbmessage.Tx_hash_list + "-" + message.Tx_hash
+				dbmessage.Account = dbmessage.Account + message.Account
+				dbmessage.Message = dbmessage.Message + message.Message
+			}
+			dbutil.InsertMessage(dbmessage)
+			message_pool, _ = DeleteMessageFromPoolBySource(dbmessage.Source)
+		} else {
+			message_pool, _ = UpdateMessagePool(messageS)
+		}
+
+	}
+	return nil
+}
 
 func Parse_block(block_index, block_time uint64, previous_ledger_hash,
 	previous_txlist_hash string) (string, string) {
 	trans, err := dbutil.GetAllTransInBlock(block_index)
+	fmt.Printf("all tran in block %d, %v\n", block_index, trans)
 	if err != nil {
 		var temp string
 		return temp, temp
 	}
 	for _, tran := range trans {
-		//Parse_tx(tran)
-
+		Parse_tx(tran)
 	}
-	//util.BLOCK_LEDGER = []
-	/*
-	   cursor.execute('''SELECT * FROM transactions \
-	                     WHERE block_index=? ORDER BY tx_index''',
-	                 (block_index,))
-	   txlist = []
-	   for tx in list(cursor):
-	       parse_tx(db, tx)
-	       txlist.append('{}{}{}{}{}{}'.format(tx['tx_hash'], tx['source'], tx['destination'],
-	                                           tx['btc_amount'], tx['fee'],
-	                                           binascii.hexlify(tx['data']).decode('UTF-8')))
 
-	   cursor.close()
-
-	   # Consensus hashes.
-	   new_txlist_hash = check.consensus_hash(db, 'txlist_hash', previous_txlist_hash, txlist)
-	   new_ledger_hash = check.consensus_hash(db, 'ledger_hash', previous_ledger_hash, util.BLOCK_LEDGER)
-
-	   return new_ledger_hash, new_txlist_hash
-	*/
 	var temp string
 	return temp, temp
 }
@@ -61,27 +165,13 @@ func Reparse(block_index uint64) error {
 }
 
 func Follow() {
+	fmt.Println("in Follow\n")
 	go dbutil.DebugInsert()
 	for {
-		block_index, err := dbutil.LastBlockIndex()
-		fmt.Printf("block_index =%d, err=%v\n", block_index, err)
-		//tran, err := dbutil.GetLastTran()
-		//fmt.Printf("last tran = %v, err=%v\n", tran, err)
-		//block, err := dbutil.GetBlock(block_index - 2)
-		//fmt.Printf("block %d is %v\n", block_index-2, block)
-
-		//tran, err = dbutil.GetTran("test_tx_hash" + fmt.Sprintf("%d", block_index-1))
-		//fmt.Printf("get tran by hash %v, %v\n", tran, err)
-		//dbutil.Reinitialise(block_index - 1)
-		//Reparse(block_index)
-		trans, err := dbutil.GetAllTransInBlock(block_index)
-		if err != nil {
-			fmt.Printf("Failed to get")
-		}
-		for _, tran := range trans {
-			fmt.Printf("tx_index is %d\n", tran.Tx_index)
-		}
-		time.Sleep(10 * time.Second)
+		block_index, _ := dbutil.LastBlockIndex()
+		fmt.Printf("before parse_block %d\n", block_index)
+		Parse_block(block_index, 0, "", "")
+		time.Sleep(2 * time.Second)
 	}
 	/*
 		logger.Infoln("Start... ")
