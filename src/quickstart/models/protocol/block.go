@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"quickstart/conf"
+	"quickstart/models/bitcoinchain"
 	"quickstart/models/dbutil"
 	"strconv"
 	"time"
@@ -166,48 +167,56 @@ func Reparse(block_index uint64) error {
 
 func Follow() {
 	fmt.Println("in Follow\n")
-	go dbutil.DebugInsert()
-	for {
-		block_index, _ := dbutil.LastBlockIndex()
-		fmt.Printf("before parse_block %d\n", block_index)
-		Parse_block(block_index, 0, "", "")
-		time.Sleep(2 * time.Second)
-	}
+	//for {
+	fmt.Println("start...")
+	//block, err := bitcoinchain.GetBlockByIndex(116219)
+	block_index, err := bitcoinchain.GetBlockCount()
+	fmt.Println("the count is ", block_index)
+	block, err := bitcoinchain.GetBlockByIndex(116219)
+	//if err != nil {
+	//	fmt.Printf("get failed block is %v, err is  %s\n", block, err)
+	//	return
+	//}
+	fmt.Printf("block.tx[0] is %v err=%v\n", block.Tx[0], err)
+	//tx, _ := bitcoinchain.GetRawTransaction(block.Tx[0])
+	//fmt.Printf("tx is %v\n", tx)
+
+	time.Sleep(10 * time.Second)
+	//}
 	/*
-		logger.Infoln("Start... ")
 		var block_index uint64
 		block_index, err := dbutil.LastBlockIndex()
 		if err != nil {
-			logger.Errorln("Get lastblockindex failed")
+			fmt.Println("Get lastblockindex failed")
 			return
 		}
 		if block_index == 0 {
-			logger.Debugln("block table in database is empty")
+			fmt.Println("block table in database is empty")
 		}
 		block_index++
 
-				var dbtran DBTransaction
+				var dbtran DB_transaction
 				dbtran, err = dbutil.GetLastTran()
 				if err != nil {
-					logger.Debugln("GetLastTran error")
+					fmt.Println("GetLastTran error")
 				}
-				logger.Debugln("dbtran=", dbtran)
+				fmt.Printf("dbtran=%v\n", dbtran)
 
 			tx_index := dbtran.Tx_index + 1
 
 		for {
-			if block_index <= rpc.GetBlockCount() {
-				logger.Debugln("Block: ",block_index)
+			if block_index <= bitcoinchain.GetBlockCount() {
+				fmt.Printf("Block: %d\n",block_index)
 				c := block_index
 				requires_rollback := false
 				for {
-					if c == BLOCKFIRST {
+					if c == 3{
 						break
 					}
-					c_block,_ := rpc.GetBlockByIndex(c)
+					c_block,_ := bitcoinchain.GetBlockByIndex(c)
 					bitcoind_parent = c_block.PreviousHash
 					block,_ :=dbutil.GetBlock(c-1)
-					if len(blocks) !=1{
+					if len(block) !=1{
 						break
 					}
 					db_parent = block.Block_hash
@@ -219,13 +228,13 @@ func Follow() {
 					}
 				}
 				if requires_rollback{
-					logger.Debugln("status:Blockchain reorganisation at block {}", c)
+					fmt.Printf("status:Blockchain reorganisation at block %v\n", c)
 					Reparse(c-1)
 					block_index = c
 					continue
 				}
-				block_hash := bitcoin.GetBlockHash(block_index)
-				block:=bitcoin.GetBlock(block_hash)
+				block_hash := bitcoinchain.GetBlockHash(block_index)
+				block:=bitcoinchain.GetBlockByIndex(block_index)
 				block_time := block.Time
 				tx_hash_list :=block.Tx
 				dbutil.InsertBlock(block_index,block_hash,block_time)
@@ -235,7 +244,7 @@ func Follow() {
 						tx_index += 1
 						continue
 					}
-					tx := bitcoin.GetRawTransaction(tx_hash)
+					tx := bitcoinchain.GetRawTransaction(tx_hash)
 					logger.Debugln("Status: examining transaction ",tx_hash)
 					source ,destination,btc_amount,fee,data := get_tx_info(tx,block_index)
 					if source and (data or destination == WISHINGWALLADDRESS){
@@ -251,6 +260,6 @@ func Follow() {
 		}else{
 			time.sleep(2)
 		}
-
 	*/
+
 }

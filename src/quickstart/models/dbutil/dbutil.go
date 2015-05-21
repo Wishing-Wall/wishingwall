@@ -29,11 +29,11 @@ func DebugInsert() {
 		var j uint64 = 1
 		InsertBlock(i, "block hash", i)
 		InsertTran(j, "tx hash", i, "block hash", i, "thesamesource",
-			WISHINGWALLADDRESS, 1, 1, "21I Love You ")
+			WISHINGWALLADDRESS, 1, 1, "21我爱你 ")
 		InsertTran(j+1, "tx hash", i, "block hash", i, "secondsource",
 			WISHINGWALLADDRESS, 1, 1, "21I Love You ")
 		InsertTran(j+2, "tx hash", i, "block hash", i, "thesamesource",
-			WISHINGWALLADDRESS, 1, 1, "22HUOHUO")
+			WISHINGWALLADDRESS, 1, 1, "22霍霍")
 		InsertTran(j+3, "tx hash", i, "block hash", i, "secondsource",
 			WISHINGWALLADDRESS, 1, 1, "22XIAO BAO BEI")
 		i++
