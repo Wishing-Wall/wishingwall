@@ -8,7 +8,7 @@ import (
 	"quickstart/models/bitcoinchain"
 	"quickstart/models/dbutil"
 	"strconv"
-	"time"
+	_ "time"
 )
 
 //this is a debug func
@@ -173,83 +173,91 @@ func Reparse(block_index uint64) error {
 }
 
 func Follow() {
-	var block_index uint64
-	block_index, err := dbutil.LastBlockIndex()
-	if err != nil {
-		fmt.Println("Get lastblockindex failed")
-		//return
-		block_index = 0
-	}
-	if block_index == 0 {
-		fmt.Println("block table in database is empty")
-	}
-	block_index++
-
-	var dbtran conf.DB_transaction
-	dbtran, err = dbutil.GetLastTran()
-	if err != nil {
-		fmt.Println("GetLastTran error")
-	}
-	fmt.Printf("dbtran=%v\n", dbtran)
-
-	tx_index := dbtran.Tx_index + 1
-
-	for {
-		tempblockcount, err := bitcoinchain.GetBlockCount()
+	block_index, _ := bitcoinchain.GetBlockCount()
+	fmt.Printf("block count is %d\n", block_index)
+	block, err := bitcoinchain.GetBlockByIndex(116219)
+	fmt.Printf("block is %+v %v\n", block, err)
+	tran, _ := bitcoinchain.GetRawTransaction(block.Tx[0])
+	fmt.Printf("tran is %+v\n", tran)
+	/*
+		var block_index uint64
+		block_index, err := dbutil.LastBlockIndex()
 		if err != nil {
-			continue
+			fmt.Println("Get lastblockindex failed")
+			//return
+			block_index = 0
 		}
-		if block_index <= tempblockcount {
-			fmt.Printf("Block: %d\n", block_index)
-			c := block_index
-			requires_rollback := false
-			for {
-				if c == 3 {
-					break
-				}
-				c_block, _ := bitcoinchain.GetBlockByIndex(c)
-				bitcoind_parent := c_block.PreviousHash
-				block, err := dbutil.GetBlock(c - 1)
-				if err != nil {
-					break
-				}
-				db_parent := block.Block_hash
-				if db_parent == bitcoind_parent {
-					break
-				} else {
-					c -= 1
-					requires_rollback = true
-				}
-			}
-			if requires_rollback {
-				fmt.Printf("status:Blockchain reorganisation at block %v\n", c)
-				Reparse(c - 1)
-				block_index = c
+		if block_index == 0 {
+			fmt.Println("block table in database is empty")
+		}
+		block_index++
+
+		var dbtran conf.DB_transaction
+		dbtran, err = dbutil.GetLastTran()
+		if err != nil {
+			fmt.Println("GetLastTran error")
+		}
+		fmt.Printf("dbtran=%v\n", dbtran)
+
+		tx_index := dbtran.Tx_index + 1
+
+		for {
+			tempblockcount, err := bitcoinchain.GetBlockCount()
+			fmt.Printf("block count is %d\n", tempblockcount)
+			if err != nil {
 				continue
 			}
-			block_hash, _ := bitcoinchain.GetBlockHashString(block_index)
-			block, _ := bitcoinchain.GetBlockByIndex(block_index)
-			block_time := block.Time
-			tx_hash_list := block.Tx
-			dbutil.InsertBlock(block_index, block_hash, uint64(block_time))
-			for _, tx_hash := range tx_hash_list {
-				_, err := dbutil.GetTran(tx_hash)
-				if err == nil {
-					tx_index += 1
+			if block_index <= tempblockcount {
+				fmt.Printf("Block: %d\n", block_index)
+				c := block_index
+				requires_rollback := false
+				for {
+					if c == 3 {
+						break
+					}
+					c_block, _ := bitcoinchain.GetBlockByIndex(c)
+					bitcoind_parent := c_block.PreviousHash
+					block, err := dbutil.GetBlock(c - 1)
+					if err != nil {
+						break
+					}
+					db_parent := block.Block_hash
+					if db_parent == bitcoind_parent {
+						break
+					} else {
+						c -= 1
+						requires_rollback = true
+					}
+				}
+				if requires_rollback {
+					fmt.Printf("status:Blockchain reorganisation at block %v\n", c)
+					Reparse(c - 1)
+					block_index = c
 					continue
 				}
-				tx, _ := bitcoinchain.GetRawTransaction(tx_hash)
-				source, destination, btc_amount, fee, data := get_tx_info(tx, block_index)
-				if source != "" && (data != "" || destination == conf.WISHINGWALLADDRESS) {
-					dbutil.InsertTran(tx_index, tx_hash, block_index, block_hash, uint64(block_time), source, destination, btc_amount, fee, data)
+				block_hash, _ := bitcoinchain.GetBlockHashString(block_index)
+				block, _ := bitcoinchain.GetBlockByIndex(block_index)
+				block_time := block.Time
+				tx_hash_list := block.Tx
+				dbutil.InsertBlock(block_index, block_hash, uint64(block_time))
+				for _, tx_hash := range tx_hash_list {
+					_, err := dbutil.GetTran(tx_hash)
+					if err == nil {
+						tx_index += 1
+						continue
+					}
+					tx, _ := bitcoinchain.GetRawTransaction(tx_hash)
+					source, destination, btc_amount, fee, data := get_tx_info(tx, block_index)
+					if source != "" && (data != "" || destination == conf.WISHINGWALLADDRESS) {
+						dbutil.InsertTran(tx_index, tx_hash, block_index, block_hash, uint64(block_time), source, destination, btc_amount, fee, data)
 
+					}
+					tx_index += 1
 				}
-				tx_index += 1
+				Parse_block(block_index, uint64(block_time), "", "")
 			}
-			Parse_block(block_index, uint64(block_time), "", "")
+			block_index += 1
 		}
-		block_index += 1
-	}
-	time.Sleep(2)
-
+		time.Sleep(2)
+	*/
 }
