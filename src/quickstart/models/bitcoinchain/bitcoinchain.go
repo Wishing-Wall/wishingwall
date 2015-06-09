@@ -1,7 +1,7 @@
 package bitcoinchain
 
 import (
-	"fmt"
+	_ "fmt"
 	"github.com/btcsuite/btcd/btcjson"
 	"github.com/btcsuite/btcd/wire"
 	"github.com/btcsuite/btcrpcclient"
@@ -55,7 +55,7 @@ func GetBlockByIndex(block_index uint64) (*btcjson.GetBlockVerboseResult, error)
 	if err != nil {
 		//return new(btcjson.GetBlockVerboseResult), err
 	}
-	fmt.Printf("the block[%d] hash is %T\n", block_index, hash)
+
 	return BlockChain.GetBlockVerbose(hash, true)
 
 }

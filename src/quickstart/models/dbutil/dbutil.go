@@ -76,7 +76,7 @@ func GetTran(tx_hash string) (DB_transaction, error) {
 		tx_hash).QueryRows(&trans)
 
 	if err != nil || num == 0 {
-		fmt.Printf("can't find trans by tx_hash %s, %v", tx_hash, err)
+		fmt.Printf("GetTran: can't find trans by tx_hash %s, %v\r\n", tx_hash, err)
 		var temp DB_transaction
 		return temp, errors.New("can't found")
 	}
@@ -110,7 +110,7 @@ func GetAllTransInBlock(block_index uint64) ([]DB_transaction, error) {
 		fmt.Printf("Failed to get trans in block %d %v\n", block_index, err)
 		return trans, err
 	}
-	fmt.Printf("get %d trans in block %d\n", num, block_index)
+	fmt.Printf("GetAllTransInBlock: get %d trans in block %d\n", num, block_index)
 	return trans, err
 }
 
