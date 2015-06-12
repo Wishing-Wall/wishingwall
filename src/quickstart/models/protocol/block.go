@@ -267,7 +267,7 @@ func Follow() {
 		}
 		block_index += 1
 		fmt.Printf("Sleep 1000 seconds\r\n")
-		time.Sleep(1000 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 
 }

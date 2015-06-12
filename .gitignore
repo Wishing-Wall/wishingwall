@@ -1,2 +1,4 @@
 *.exe
 *.db
+/src/quickstart/*.db
+/src/quickstart/*.exe
