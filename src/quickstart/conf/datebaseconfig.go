@@ -7,7 +7,23 @@ package conf
 const DATABASEPATH string = "./database.db"
 
 const BLOCK_FIRST uint64 = 1
-const WISHINGWALLADDRESS string = "DLHV2GJrDL5M9atZ49BZ6DKwZhDWFEZfxw"
+
+//main net
+//const WISHINGWALLADDRESS string = "DLHV2GJrDL5M9atZ49BZ6DKwZhDWFEZfxw"
+
+//testnet
+const WISHINGWALLADDRESS string = "mwn9HEbcjFuxZd9AZZZsLjPKVRhPxGEXV2"
+
+//const PAYTOWISHINGWALL string = "OP_DUP OP_HASH160 b2616c2a516f75fa26896919cb52602338a71308 OP_EQUALVERIFY OP_CHECKSIG"
+const PAYTOWISHINGWALL string = "76a914b2616c2a516f75fa26896919cb52602338a7130888ac"
+const COIN uint64 = 100000000
+const MESSAGEFEE = 10860
+
+const FEE = 10000
+
+const OP_1 = "51"
+const OP_2 = "52"
+const OP_CHECKMULTISIG = "ae"
 
 //runtime variable
 var CURRENT_BLOCK_INDEX uint64

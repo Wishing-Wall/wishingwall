@@ -8,10 +8,18 @@ import (
 	_ "github.com/btcsuite/btcutil"
 )
 
+/*
 var connCfg = &btcrpcclient.ConnConfig{
 	Host:         "192.168.31.104:8332",
 	User:         "cddiao",
 	Pass:         "jaijdfakejijfkSdjfaioejfakdljfiaejfakdjf",
+	HTTPPostMode: true, // Bitcoin core only supports HTTP POST mode
+	DisableTLS:   true, // Bitcoin core does not provide TLS by default
+}*/
+var connCfg = &btcrpcclient.ConnConfig{
+	Host:         "192.168.31.104:19001",
+	User:         "admin1",
+	Pass:         "123",
 	HTTPPostMode: true, // Bitcoin core only supports HTTP POST mode
 	DisableTLS:   true, // Bitcoin core does not provide TLS by default
 }

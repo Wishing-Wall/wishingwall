@@ -259,14 +259,13 @@ func Follow() {
 				source, destination, btc_amount, fee, data := get_tx_info(tx, block_index)
 				if source != "" && (data != "" || destination == conf.WISHINGWALLADDRESS) {
 					dbutil.InsertTran(tx_index, tx_hash, block_index, block_hash, uint64(block_time), source, destination, btc_amount, fee, data)
-
 				}
 				tx_index += 1
 			}
 			Parse_block(block_index, uint64(block_time), "", "")
 		}
 		block_index += 1
-		fmt.Printf("Sleep 1000 seconds\r\n")
+		fmt.Printf("Sleep 10 seconds\r\n")
 		time.Sleep(10 * time.Second)
 	}
 
