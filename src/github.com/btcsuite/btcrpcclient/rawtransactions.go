@@ -360,6 +360,11 @@ func (c *Client) SignRawTransactionAsync(tx *wire.MsgTx) FutureSignRawTransactio
 	return c.sendCmd(cmd)
 }
 
+func (c *Client) SignRawTransactionAsyncCMD(tx string) FutureSignRawTransactionResult {
+	cmd := btcjson.NewSignRawTransactionCmd(tx, nil, nil, nil)
+	return c.sendCmd(cmd)
+}
+
 // SignRawTransaction signs inputs for the passed transaction and returns the
 // signed transaction as well as whether or not all inputs are now signed.
 //
@@ -369,6 +374,11 @@ func (c *Client) SignRawTransactionAsync(tx *wire.MsgTx) FutureSignRawTransactio
 // specify that information if needed.
 func (c *Client) SignRawTransaction(tx *wire.MsgTx) (*wire.MsgTx, bool, error) {
 	return c.SignRawTransactionAsync(tx).Receive()
+}
+
+// create by cddiao ,used like bitcoin-cli cmd
+func (c *Client) SignRawTransactionCMD(tx string) (*wire.MsgTx, bool, error) {
+	return c.SignRawTransactionAsyncCMD(tx).Receive()
 }
 
 // SignRawTransaction2Async returns an instance of a type that can be used to
