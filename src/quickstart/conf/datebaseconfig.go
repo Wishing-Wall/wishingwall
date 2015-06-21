@@ -77,11 +77,11 @@ type DB_blocks struct {
 }
 
 type DB_send struct {
-	Id           int
-	RelayAddr    string
-	Message      string
-	ConfirmTimes int
-	CheckTimes   int
-	IsSent       bool
-	Succeed      bool
+	Id         int
+	RelayAddr  string
+	Message    string
+	CreateTime int64 // utc time
+	MinMoney   uint64
+	IsSent     bool
+	Tx_hash    string
 }

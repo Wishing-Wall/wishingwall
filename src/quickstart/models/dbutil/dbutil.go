@@ -3,12 +3,13 @@ package dbutil
 import (
 	"errors"
 	"fmt"
-	"github.com/astaxie/beego/orm"
-	_ "github.com/mattn/go-sqlite3"
 	. "quickstart/conf"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/astaxie/beego/orm"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var myorm orm.Ormer
@@ -112,6 +113,32 @@ func GetAllTransInBlock(block_index uint64) ([]DB_transaction, error) {
 	}
 	fmt.Printf("GetAllTransInBlock: get %d trans in block %d\n", num, block_index)
 	return trans, err
+}
+
+func InsertSend(ReplyAddress string, Message string, MinMoney uint64) error {
+	send := new(DB_send)
+	send.IsSent = false
+	send.Message = Message
+	send.RelayAddr = ReplyAddress
+	send.MinMoney = MinMoney
+	send.CreateTime = time.Now().Unix()
+	_, err := myorm.Insert(send)
+	return err
+}
+
+func UpdateSend(send DB_send) error {
+	_, err := myorm.Raw("update d_b_send set is_sent = 1, "+
+		"tx_hash = ? where id = ?", send.Tx_hash, send.Id).Exec()
+	return err
+}
+
+func GetAllUnsentMessage(timeduration time.Duration) ([]DB_send, error) {
+	now := time.Now()
+	validtime := now.Add(-timeduration)
+	var sends []DB_send
+	_, err := myorm.Raw("select * from d_b_send "+
+		"where is_sent = 0 and create_time > ?", validtime.Unix()).QueryRows(&sends)
+	return sends, err
 }
 
 func GetAllBlocks() ([]DB_blocks, error) {

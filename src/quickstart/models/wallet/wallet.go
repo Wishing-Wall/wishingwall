@@ -228,3 +228,8 @@ func CreateRawTransaction(PayAddress string, Message string) (*wire.MsgTx, uint6
 	return MsgTxReal, MinMoney, nil
 
 }
+
+func UnspentList(NeedConfirmTime int) ([]btcjson.ListUnspentResult, error) {
+	list, err := BlockChain.ListUnspentMin(NeedConfirmTime)
+	return list, err
+}

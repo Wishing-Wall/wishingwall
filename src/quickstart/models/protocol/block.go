@@ -20,13 +20,14 @@ func get_tx_info(tx *btcjson.TxRawResult, block_index uint64) (source,
 	var bFound bool = false
 	for _, value := range tx.Vout {
 		Address := value.ScriptPubKey.Addresses
-		fmt.Printf("Address[0] is %v\r\n", Address[0])
 
-		if Address[0] == conf.WISHINGWALLADDRESS {
-			fmt.Printf("Got one valied tx %v\r\n", tx.Hex)
-			fmt.Printf("the tx is %v\r\n", tx)
-			bFound = true
-			continue
+		if len(Address) != 0 {
+			if Address[0] == conf.WISHINGWALLADDRESS {
+				fmt.Printf("Got one valied tx %v\r\n", tx.Hex)
+				fmt.Printf("the tx is %v\r\n", tx)
+				bFound = true
+				continue
+			}
 		}
 		if bFound == true {
 			message := strings.Split(value.ScriptPubKey.Asm, " ")

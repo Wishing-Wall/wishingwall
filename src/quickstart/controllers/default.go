@@ -21,10 +21,9 @@ func (c *MainController) Post() {
 	send.Message = c.GetString("clientmessage")
 	fmt.Printf("client message is %v", send.Message)
 	send.RelayAddr = send.Message + "testaddr"
-	send.ConfirmTimes = 0
-	send.CheckTimes = 0
+
 	send.IsSent = false
-	send.Succeed = false
+
 	o.Insert(send)
 	c.Ctx.Redirect(301, "addr")
 }
