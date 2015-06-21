@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/btcsuite/btcd/btcjson"
+	"github.com/btcsuite/btcd/wire"
 	"github.com/btcsuite/btcrpcclient"
 	_ "github.com/btcsuite/btcutil"
 )
@@ -180,10 +181,16 @@ var connCfg = &btcrpcclient.ConnConfig{
 
 var BlockChain, _ = btcrpcclient.New(connCfg, nil)
 
-func CreateRawTransaction(PayAddress string, Message string) (serialize string, NeedPay uint64, err error) {
+func SendRawTransaction(MsgTx *wire.MsgTx) (*wire.ShaHash, error) {
+	hash, err := BlockChain.SendRawTransaction(MsgTx, false)
+	fmt.Printf("hash is %v err is %v\r\n", hash, err)
+	return hash, err
+}
+
+func CreateRawTransaction(PayAddress string, Message string) (*wire.MsgTx, uint64, error) {
 	UnspentList, err := BlockChain.ListUnspent()
 	if err != nil {
-		return "", 0, errors.New("ListUnspent error")
+		return nil, 0, errors.New("ListUnspent error")
 	}
 	var tx []btcjson.ListUnspentResult
 	var totalmoney uint64
@@ -201,13 +208,13 @@ func CreateRawTransaction(PayAddress string, Message string) (serialize string, 
 	serializeTry, _ := RawTranTry.ToSerialize()
 	MsgTx, _, _ := BlockChain.SignRawTransactionCMD(serializeTry)
 
-	MinMoney += uint64(MsgTx.SerializeSize()) / 1000 * conf.FEE
+	MinMoney += uint64(MsgTx.SerializeSize())/1000*conf.FEE + conf.FEE
 
 	//hash, err := BlockChain.SendRawTransaction(MsgTx, true)
 	//fmt.Printf("hash is %v err is %v\r\n", hash, err)
 
 	if totalmoney < MinMoney {
-		return "", MinMoney, errors.New(fmt.Sprintf("Do not Have enough money in address %s has %v need %v", PayAddress,
+		return nil, MinMoney, errors.New(fmt.Sprintf("Do not Have enough money in address %s has %v need %v", PayAddress,
 			totalmoney, MinMoney))
 	}
 
@@ -217,9 +224,7 @@ func CreateRawTransaction(PayAddress string, Message string) (serialize string, 
 	RawTranReal, _ = InsertOutputPay(RawTranReal, (totalmoney - MinMoney + conf.MESSAGEFEE), Message)
 	serializeReal, _ := RawTranReal.ToSerialize()
 	MsgTxReal, _, _ := BlockChain.SignRawTransactionCMD(serializeReal)
-	fmt.Printf("Msg serlen %v\r\n", MsgTxReal.SerializeSize())
 	MinMoney += uint64(MsgTxReal.SerializeSize()) / 1000 * conf.FEE
-	fmt.Printf("serialize is %v\r\n", serializeReal)
-	return serializeReal, MinMoney, nil
+	return MsgTxReal, MinMoney, nil
 
 }
