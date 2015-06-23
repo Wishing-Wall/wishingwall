@@ -75,7 +75,7 @@
 
 <body>
   <header>
-	<META HTTP-EQUIV="REFRESH" CONTENT="5" > 
+	<!-- META HTTP-EQUIV="REFRESH" CONTENT="5"--> 
 	{{range $key, $val := .messages}}
 		<h{{$key}}>{{$val.Message}}</h{{$key}}>
 	{{end}}

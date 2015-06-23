@@ -1,1 +1,1 @@
-<head> test </head>
+<head> test {{.address}} and {{.minmoney}} </head>

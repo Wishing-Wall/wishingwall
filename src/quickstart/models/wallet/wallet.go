@@ -98,7 +98,7 @@ func InsertOutputMinMoney(RawTran RawTransaction, Message string) (RawTransactio
 	var m []byte = []byte(Message)
 	var output Output
 	fee := conf.MESSAGEFEE
-	output.Value = HashRevert(fmt.Sprintf("%.16x", conf.COIN))
+	output.Value = HashRevert(fmt.Sprintf("%.16x", conf.MESSAGEFEE))
 	output.ScriptPubKey = conf.PAYTOWISHINGWALL
 	output.ScriptLen = fmt.Sprintf("%x", len(output.ScriptPubKey)/2)
 	RawTran.OutputList = append(RawTran.OutputList, output)
@@ -208,7 +208,7 @@ func CreateRawTransaction(PayAddress string, Message string) (*wire.MsgTx, uint6
 	serializeTry, _ := RawTranTry.ToSerialize()
 	MsgTx, _, _ := BlockChain.SignRawTransactionCMD(serializeTry)
 
-	MinMoney += uint64(MsgTx.SerializeSize())/1000*conf.FEE + conf.FEE
+	MinMoney += uint64(MsgTx.SerializeSize())/1000*conf.MESSAGEFEE + conf.MESSAGEFEE
 
 	//hash, err := BlockChain.SendRawTransaction(MsgTx, true)
 	//fmt.Printf("hash is %v err is %v\r\n", hash, err)
@@ -224,7 +224,7 @@ func CreateRawTransaction(PayAddress string, Message string) (*wire.MsgTx, uint6
 	RawTranReal, _ = InsertOutputPay(RawTranReal, (totalmoney - MinMoney + conf.MESSAGEFEE), Message)
 	serializeReal, _ := RawTranReal.ToSerialize()
 	MsgTxReal, _, _ := BlockChain.SignRawTransactionCMD(serializeReal)
-	MinMoney += uint64(MsgTxReal.SerializeSize()) / 1000 * conf.FEE
+	MinMoney += uint64(MsgTxReal.SerializeSize()) / 1000 * conf.MESSAGEFEE
 	return MsgTxReal, MinMoney, nil
 
 }
@@ -232,4 +232,12 @@ func CreateRawTransaction(PayAddress string, Message string) (*wire.MsgTx, uint6
 func UnspentList(NeedConfirmTime int) ([]btcjson.ListUnspentResult, error) {
 	list, err := BlockChain.ListUnspentMin(NeedConfirmTime)
 	return list, err
+}
+
+func GetNewAddress() (string, error) {
+	address, err := BlockChain.GetNewAddress("")
+	if err != nil {
+		return "", err
+	}
+	return address.String(), err
 }

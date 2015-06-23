@@ -1,11 +1,12 @@
 package routers
 
 import (
-	"github.com/astaxie/beego"
 	"quickstart/controllers"
+
+	"github.com/astaxie/beego"
 )
 
 func init() {
 	beego.Router("/", &controllers.MainController{})
-	beego.Router("/addr", &controllers.ShowAddrController{})
+	beego.Router("/:address/:minmoney", &controllers.ShowAddrController{})
 }
