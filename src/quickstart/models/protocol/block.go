@@ -124,15 +124,18 @@ func DeleteMessageFromPoolBySource(source string) ([]polls, error) {
 
 func GetMessageFromData(data string) (message_count,
 	message_index uint64, message_body string) {
-	fmt.Printf("GetMessageFromData %v\r\n", data)
+	fmt.Printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\r\nGetMessageFromData %x\r\n", data)
 	databyte := []byte(data)
 	temp, _ := strconv.Atoi(string(databyte[0:2]))
 	message_count = uint64(temp)
 	temp, _ = strconv.Atoi(string(databyte[2:4]))
 	message_index = uint64(temp)
 	converbody, _ := hex.DecodeString(string(databyte[4:]))
-	var converrune []rune = []rune(string(converbody))
-	message_body = string(converrune)
+	fmt.Printf("converbody is %x\r\n", converbody)
+	//var converrune []rune = []rune(string(converbody))
+	//fmt.Printf("converrune is %x\r\n", converrune)
+	message_body = string(converbody)
+	fmt.Printf("message_body is %x\r\n", message_body)
 	return message_count, message_index, message_body
 }
 
@@ -150,7 +153,7 @@ func Parse_tx(tran conf.DB_transaction) error {
 		//	return nil
 		//}
 		message_count, message_index, message_body := GetMessageFromData(tran.Data)
-		fmt.Printf("get from data count=%d, index =%d body=%s\n", message_count, message_index, message_body)
+		fmt.Printf("get from data count=%d, index =%d body=%x\n", message_count, message_index, message_body)
 		//like a temporary storage
 		var message poll
 		message.Source = tran.Source
@@ -179,8 +182,13 @@ func Parse_tx(tran conf.DB_transaction) error {
 					strconv.FormatUint(message.Tx_index, 10)
 				dbmessage.Tx_hash_list = dbmessage.Tx_hash_list + "-" + message.Tx_hash
 				dbmessage.Account = dbmessage.Account + message.Account
+				fmt.Printf("=======================================================\r\n")
+				fmt.Printf("dbmessage before %x\r\n", dbmessage.Message)
+				fmt.Printf("message.message %x\r\n", message.Message)
 				dbmessage.Message = dbmessage.Message + message.Message
+				fmt.Printf("dbmessage %x\r\n", dbmessage.Message)
 			}
+
 			dbutil.InsertMessage(dbmessage)
 			message_pool, _ = DeleteMessageFromPoolBySource(dbmessage.Source)
 		} else {
@@ -327,7 +335,7 @@ func Follow() {
 			Parse_block(block_index, uint64(block_time), "", "")
 			block_index++
 		}
-		fmt.Printf("Sleep 1 seconds\r\n")
+		//fmt.Printf("Sleep 1 seconds\r\n")
 		time.Sleep(1 * time.Second)
 	}
 

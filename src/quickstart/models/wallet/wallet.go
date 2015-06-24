@@ -110,7 +110,7 @@ func InsertOutputMinMoney(RawTran RawTransaction, Message string) (RawTransactio
 	if tail != 0 {
 		total++
 		for i := 0; i < (64 - tail); i++ {
-			m = append(m, 0xff)
+			m = append(m, 0x00)
 		}
 	}
 
@@ -148,7 +148,7 @@ func InsertOutputPay(RawTran RawTransaction, PaytoMe uint64, Message string) (Ra
 	if tail != 0 {
 		total++
 		for i := 0; i < (64 - tail); i++ {
-			m = append(m, 0xff)
+			m = append(m, 0x00)
 		}
 	}
 
