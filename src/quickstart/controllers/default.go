@@ -2,15 +2,12 @@ package controllers
 
 import (
 	"fmt"
-	. "quickstart/conf"
+	"quickstart/conf"
 	"quickstart/models/dbutil"
 	"quickstart/models/wallet"
 	"sort"
 
-	"quickstart/conf"
-
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 )
 
 type MainController struct {
@@ -47,25 +44,50 @@ func (c *MainController) Post() {
 }
 
 func (c *MainController) Get() {
-	o := orm.NewOrm()
-	o.Using("default")
-	var count int
-	o.Raw("select max(id) from d_b_message").QueryRow(&count)
-	//fmt.Printf("count is %d\n", count)
-	min := count - 10
-	if min < 0 {
-		min = 0
-	}
-	var messages DB_messages
-	//fmt.Printf("min %v max %v\r\n", min, count)
-	o.Raw("select * from d_b_message where id >= ? and id <= ?", min, count).QueryRows(&messages)
+	pagestart, _ := c.GetInt("s")
+	pageend, _ := c.GetInt("e")
 
-	c.Data["Website"] = "beego.me"
-	c.Data["Email"] = "astaxie@gmail.com"
-	//fmt.Printf("message before sort %v\n", messages)
+	count := dbutil.LastMessageIndex()
+	if pagestart == 0 && pageend == 0 {
+		pageend = count
+	}
+
+	if pageend > count {
+		pageend = count
+	}
+	if pagestart < pageend-10 {
+		pagestart = pageend - 10
+	}
+	if pagestart < 0 {
+		pagestart = 0
+	}
+
+	messages := dbutil.GetMessages(pagestart, pageend)
+
+	nextend := pageend + 10
+	if nextend > count {
+		nextend = count
+	}
+	nextstart := nextend - 10
+	if nextstart < pagestart {
+		nextstart = pagestart
+	}
+	prestart := pagestart - 10
+	if prestart < 0 {
+		prestart = 0
+	}
+	preend := prestart + 10
+	if preend > pageend {
+		preend = pageend
+	}
+
 	sort.Sort(sort.Reverse(messages))
-	//fmt.Printf("message after sort %v\n", messages)
 	c.Data["messages"] = messages
+	c.Data["prestart"] = prestart
+	c.Data["preend"] = preend
+	c.Data["nextstart"] = nextstart
+	c.Data["nextend"] = nextend
+
 	c.TplNames = "index.tpl"
 }
 

@@ -42,6 +42,19 @@ func DebugInsert() {
 	}
 }
 
+func LastMessageIndex() int {
+	var count int
+	myorm.Raw("select max(id) from d_b_message").QueryRow(&count)
+	return count
+}
+
+func GetMessages(start int, end int) DB_messages {
+	var messages DB_messages
+	myorm.Raw("select * from d_b_message where id >= ? and id <= ?", start,
+		end).QueryRows(&messages)
+	return messages
+}
+
 func LastBlockIndex() (uint64, error) {
 	var i int
 	myorm.Raw("Select count(*) from d_b_blocks").QueryRow(&i)
