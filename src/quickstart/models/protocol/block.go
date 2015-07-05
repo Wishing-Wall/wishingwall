@@ -98,7 +98,7 @@ func UpdateMessagePool(messageS polls) ([]polls, error) {
 }
 
 func GetMessageFromPoolBySource(source string) (polls, error) {
-	fmt.Printf("the message_pool is %T, %v\n", message_pool, message_pool)
+
 	for _, messageS := range message_pool {
 		for _, message := range messageS {
 			if source == message.Source {
@@ -146,15 +146,9 @@ func Parse_tx(tran conf.DB_transaction) error {
 		if bAlready {
 			return nil
 		}
-		//_, err := dbutil.GetMessageBySource(tran.Source)
-		//fmt.Printf("GetMessage return err = %v\n", err)
-		//if nil == err {
-		////	fmt.Printf("return from parse_tx\n")
-		//	return nil
-		//}
+
 		message_count, message_index, message_body := GetMessageFromData(tran.Data)
-		fmt.Printf("get from data count=%d, index =%d body=%x\n", message_count, message_index, message_body)
-		//like a temporary storage
+
 		var message poll
 		message.Source = tran.Source
 		message.Destination = tran.Destination
@@ -168,7 +162,7 @@ func Parse_tx(tran conf.DB_transaction) error {
 
 		messageS, _ := GetMessageFromPoolBySource(tran.Source)
 		messageS = append(messageS, message)
-		fmt.Printf("message len=%d, should be %d\n", len(messageS), messageS[0].Message_count)
+
 		if messageS[0].Message_count == uint64(len(messageS)) {
 			//insert to db
 			var dbmessage conf.DB_message
@@ -182,11 +176,8 @@ func Parse_tx(tran conf.DB_transaction) error {
 					strconv.FormatUint(message.Tx_index, 10)
 				dbmessage.Tx_hash_list = dbmessage.Tx_hash_list + "-" + message.Tx_hash
 				dbmessage.Account = dbmessage.Account + message.Account
-				fmt.Printf("=======================================================\r\n")
-				fmt.Printf("dbmessage before %x\r\n", dbmessage.Message)
-				fmt.Printf("message.message %x\r\n", message.Message)
+
 				dbmessage.Message = dbmessage.Message + message.Message
-				fmt.Printf("dbmessage %x\r\n", dbmessage.Message)
 			}
 
 			dbutil.InsertMessage(dbmessage)
@@ -235,14 +226,6 @@ func Reparse(block_index uint64) error {
 }
 
 func Follow() {
-	/*
-		block_index, _ := bitcoinchain.GetBlockCount()
-		fmt.Printf("block count is %d\n", block_index)
-		block, err := bitcoinchain.GetBlockByIndex(116219)
-		fmt.Printf("block is %+v %v\n", block, err)
-		tran, _ := bitcoinchain.GetRawTransaction(block.Tx[0])
-		fmt.Printf("tran is %+v\n", tran)
-	*/
 	var block_index uint64
 	block_index, err := dbutil.LastBlockIndex()
 	if err != nil {
@@ -277,7 +260,7 @@ func Follow() {
 			c := block_index
 			requires_rollback := false
 			for {
-				if c == 3 {
+				if c == 363919 {
 					fmt.Printf("Reach the start...")
 					break
 				}

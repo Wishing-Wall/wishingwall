@@ -2,6 +2,7 @@ package bitcoinchain
 
 import (
 	_ "fmt"
+
 	"github.com/btcsuite/btcd/btcjson"
 	"github.com/btcsuite/btcd/wire"
 	"github.com/btcsuite/btcrpcclient"
@@ -17,9 +18,9 @@ var connCfg = &btcrpcclient.ConnConfig{
 	DisableTLS:   true, // Bitcoin core does not provide TLS by default
 }*/
 var connCfg = &btcrpcclient.ConnConfig{
-	Host:         "192.168.31.104:19001",
-	User:         "admin1",
-	Pass:         "123",
+	Host:         "127.0.0.1:19011",
+	User:         "...",
+	Pass:         "...",
 	HTTPPostMode: true, // Bitcoin core only supports HTTP POST mode
 	DisableTLS:   true, // Bitcoin core does not provide TLS by default
 }
