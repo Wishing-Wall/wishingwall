@@ -43,6 +43,7 @@ type DB_message struct {
 	Source           string // a unique symbol for a DB_message
 	Destination      string
 	Message          string //the combine of message_body in many tran.Data
+	BHidden          int
 }
 type DB_messages []DB_message
 
