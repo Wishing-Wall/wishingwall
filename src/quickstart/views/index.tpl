@@ -33,5 +33,13 @@
 	  <textarea type="text" name="clientmessage" cols=120 rows=10></textarea>
 	  <br>
 	  <input type="submit" value="submit">
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
 
+  <footer>This service operates automatically and can not delete your posts because the
+     block chain cannot be rollback. The authors of this site are not responsible for 
+	 the content it displays. Viewer discretion is advised.</footer>
 </html>
