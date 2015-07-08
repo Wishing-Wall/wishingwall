@@ -173,8 +173,8 @@ func InsertOutputPay(RawTran RawTransaction, PaytoMe uint64, Message string) (Ra
 
 var connCfg = &btcrpcclient.ConnConfig{
 	Host:         "127.0.0.1:19011",
-	User:         "...",
-	Pass:         "...",
+	User:         "johnsonbernoulli",
+	Pass:         "BitcoinIsTheFuture",
 	HTTPPostMode: true, // Bitcoin core only supports HTTP POST mode
 	DisableTLS:   true, // Bitcoin core does not provide TLS by default
 }
