@@ -9,7 +9,7 @@ import (
 	"quickstart/models/dbutil"
 	"strconv"
 	"strings"
-	"time"
+//	"time"
 
 	"github.com/btcsuite/btcd/btcjson"
 )
@@ -319,7 +319,8 @@ func Follow() {
 			block_index++
 		}
 		//fmt.Printf("Sleep 1 seconds\r\n")
-		time.Sleep(1 * time.Second)
+                fmt.Printf("Do not sleep")
+		//time.Sleep(1 * time.Second)
 	}
 
 }
