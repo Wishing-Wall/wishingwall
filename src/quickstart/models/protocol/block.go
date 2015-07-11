@@ -124,24 +124,19 @@ func DeleteMessageFromPoolBySource(source string) ([]polls, error) {
 
 func GetMessageFromData(data string) (message_count,
 	message_index uint64, message_body string) {
-	fmt.Printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\r\nGetMessageFromData %x\r\n", data)
 	databyte := []byte(data)
 	temp, _ := strconv.Atoi(string(databyte[0:2]))
 	message_count = uint64(temp)
 	temp, _ = strconv.Atoi(string(databyte[2:4]))
 	message_index = uint64(temp)
 	converbody, _ := hex.DecodeString(string(databyte[4:]))
-	fmt.Printf("converbody is %x\r\n", converbody)
 	//var converrune []rune = []rune(string(converbody))
-	//fmt.Printf("converrune is %x\r\n", converrune)
 	message_body = string(converbody)
-	fmt.Printf("message_body is %x\r\n", message_body)
 	return message_count, message_index, message_body
 }
 
 func Parse_tx(tran conf.DB_transaction) error {
 	if tran.Destination == conf.WISHINGWALLADDRESS {
-		fmt.Printf("before call GetMEssageBySource\n")
 		bAlready := dbutil.CheckWhetherRecord(tran)
 		if bAlready {
 			return nil
@@ -237,6 +232,10 @@ func Follow() {
 		fmt.Println("block table in database is empty")
 	}
 	block_index++
+        fmt.Print("The last block_index++ in db is ", block_index)
+	if block_index < 363919 {
+		block_index = 363919
+        }
 	fmt.Printf("block_index is %v\r\n", block_index)
 
 	var dbtran conf.DB_transaction
@@ -246,7 +245,6 @@ func Follow() {
 	}
 
 	tx_index := dbtran.Tx_index + 1
-	fmt.Printf("tx_index is %d\r\n", tx_index)
 	for {
 		tempblockcount, err := bitcoinchain.GetBlockCount()
 
@@ -254,7 +252,6 @@ func Follow() {
 			fmt.Printf("get tempblockcount failed %v\r\n", err)
 			continue
 		}
-		fmt.Printf("tempblockcount is %d\r\n", tempblockcount)
 		if block_index <= tempblockcount {
 			fmt.Printf("block_index[%d] < tempblockcount[%d]\r\n", block_index, tempblockcount)
 			c := block_index
@@ -304,7 +301,6 @@ func Follow() {
 					fmt.Printf("GetRawTransaction %v failed %v\r\n", tx_hash, err)
 					continue
 				}
-				fmt.Printf("raw tran in blockchain %v\r\n", tx)
 				source, destination, btc_amount, fee, data := get_tx_info(tx, block_index)
 				for _, value := range data {
 					if source != "" && (value != "" || destination == conf.WISHINGWALLADDRESS) {
@@ -318,7 +314,7 @@ func Follow() {
 			Parse_block(block_index, uint64(block_time), "", "")
 			block_index++
 		}
-		if block_index > 363919 {
+		if block_index >= 363919 {
 			fmt.Printf("sleep 1 second")
 			time.Sleep(1 * time.Second)
 		}
