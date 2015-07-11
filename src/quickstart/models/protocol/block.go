@@ -9,7 +9,7 @@ import (
 	"quickstart/models/dbutil"
 	"strconv"
 	"strings"
-//	"time"
+	"time"
 
 	"github.com/btcsuite/btcd/btcjson"
 )
@@ -318,9 +318,10 @@ func Follow() {
 			Parse_block(block_index, uint64(block_time), "", "")
 			block_index++
 		}
-		//fmt.Printf("Sleep 1 seconds\r\n")
-                fmt.Printf("Do not sleep")
-		//time.Sleep(1 * time.Second)
+		if block_index > 363919 {
+			fmt.Printf("sleep 1 second")
+			time.Sleep(1 * time.Second)
+		}
 	}
 
 }
