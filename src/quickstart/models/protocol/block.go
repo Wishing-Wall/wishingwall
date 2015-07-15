@@ -252,8 +252,8 @@ func Follow() {
 			fmt.Printf("get tempblockcount failed %v\r\n", err)
 			continue
 		}
+                fmt.Printf("block_index is %v, templockcount is %v\r\n", block_index, tempblockcount)
 		if block_index <= tempblockcount {
-			fmt.Printf("block_index[%d] < tempblockcount[%d]\r\n", block_index, tempblockcount)
 			c := block_index
 			requires_rollback := false
 			for {
@@ -315,7 +315,7 @@ func Follow() {
 			block_index++
 		}
 		if block_index >= 363919 {
-			fmt.Printf("sleep 1 second")
+			fmt.Printf("sleep 1 second\r\n")
 			time.Sleep(1 * time.Second)
 		}
 	}
