@@ -14,6 +14,8 @@ import (
 	"github.com/btcsuite/btcd/btcjson"
 )
 
+var GlobalLastBlockIndex uint64
+
 //this is a debug func
 func get_tx_info(tx *btcjson.TxRawResult, block_index uint64) (source,
 	destination string, btc_amount, fee uint64, data []string) {
@@ -247,7 +249,7 @@ func Follow() {
 	tx_index := dbtran.Tx_index + 1
 	for {
 		tempblockcount, err := bitcoinchain.GetBlockCount()
-
+		GlobalLastBlockIndex, _ = bitcoinchain.GetBlockCount()
 		if err != nil {
 			fmt.Printf("get tempblockcount failed %v\r\n", err)
 			continue

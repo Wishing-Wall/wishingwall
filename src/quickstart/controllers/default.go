@@ -2,12 +2,12 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/astaxie/beego"
 	"quickstart/conf"
 	"quickstart/models/dbutil"
+	"quickstart/models/protocol"
 	"quickstart/models/wallet"
 	"sort"
-
-	"github.com/astaxie/beego"
 )
 
 type MainController struct {
@@ -87,7 +87,7 @@ func (c *MainController) Get() {
 	c.Data["preend"] = preend
 	c.Data["nextstart"] = nextstart
 	c.Data["nextend"] = nextend
-
+	c.Data["maxblockindex"] = protocol.GlobalLastBlockIndex
 	c.TplNames = "index.tpl"
 }
 
