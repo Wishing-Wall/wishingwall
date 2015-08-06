@@ -39,7 +39,7 @@
   <br>
   <br>
   <br>
-  <footer>                 The current block index : {{.maxblockindex}}</footer> 
+  <footer>The Block Chain Height : {{.maxblockindex}}; Wishing Wall Reached : {{.parsedblockindex}} </footer> 
   <footer>This service operates automatically and can not delete your posts because the
      block chain cannot be rollback. The authors of this site are not responsible for 
 	 the content it displays. Viewer discretion is advised.</footer>

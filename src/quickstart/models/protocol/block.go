@@ -15,7 +15,7 @@ import (
 )
 
 var GlobalLastBlockIndex uint64
-
+var GlobalParsedBlockIndex uint64
 //this is a debug func
 func get_tx_info(tx *btcjson.TxRawResult, block_index uint64) (source,
 	destination string, btc_amount, fee uint64, data []string) {
@@ -249,12 +249,13 @@ func Follow() {
 	tx_index := dbtran.Tx_index + 1
 	for {
 		tempblockcount, err := bitcoinchain.GetBlockCount()
-		GlobalLastBlockIndex, _ = bitcoinchain.GetBlockCount()
+		GlobalLastBlockIndex = tempblockcount
 		if err != nil {
 			fmt.Printf("get tempblockcount failed %v\r\n", err)
 			continue
 		}
                 fmt.Printf("block_index is %v, templockcount is %v\r\n", block_index, tempblockcount)
+		GlobalParsedBlockIndex = block_index
 		if block_index <= tempblockcount {
 			c := block_index
 			requires_rollback := false
