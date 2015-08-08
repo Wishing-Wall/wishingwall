@@ -6,7 +6,6 @@ package conf
 
 const DATABASEPATH string = "./database.db"
 
-const BLOCK_FIRST uint64 = 1
 
 const MainNet bool = true
 

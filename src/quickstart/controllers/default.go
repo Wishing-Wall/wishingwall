@@ -88,7 +88,7 @@ func (c *MainController) Get() {
 	c.Data["preend"] = preend
 	c.Data["nextstart"] = nextstart
 	c.Data["nextend"] = nextend
-	c.Data["maxblockindex"] = protocol.GlobalLastBlockIndex
+	c.Data["maxblockindex"] = protocol.GlobalLastBlockIndex 
 	c.Data["parsedblockindex"] = protocol.GlobalParsedBlockIndex
 	c.TplNames = "index.tpl"
 }

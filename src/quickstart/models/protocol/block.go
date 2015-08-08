@@ -16,7 +16,7 @@ import (
 	"github.com/btcsuite/btcd/wire"
 )
 
-var startblockindex uint64 = 5
+var startblockindex uint64 = 363919
 
 var GlobalLastBlockIndex uint64
 var GlobalParsedBlockIndex uint64
