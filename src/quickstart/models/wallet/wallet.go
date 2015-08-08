@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"quickstart/conf"
-	"strings"
 
 	"github.com/btcsuite/btcd/btcjson"
 	"github.com/btcsuite/btcd/wire"
@@ -56,8 +55,8 @@ func (this *RawTransaction) ToSerialize() (string, error) {
 		serialize += t.ScriptLen
 		serialize += t.ScriptPubKey
 	}
+
 	serialize += "00000000"
-	serialize = strings.Replace(serialize, " ", "", -1)
 	return serialize, nil
 
 }
@@ -110,7 +109,7 @@ func InsertOutputMinMoney(RawTran RawTransaction, Message string) (RawTransactio
 	if tail != 0 {
 		total++
 		for i := 0; i < (64 - tail); i++ {
-			m = append(m, 0x00)
+			m = append(m, 0x20) //white space
 		}
 	}
 
@@ -124,7 +123,6 @@ func InsertOutputMinMoney(RawTran RawTransaction, Message string) (RawTransactio
 			fmt.Sprintf("%x", string(m[base:base+31])) + "21" +
 			fmt.Sprintf("%x", string(m[base+31:base+64])) +
 			conf.OP_2 + conf.OP_CHECKMULTISIG
-
 		message.ScriptLen = fmt.Sprintf("%x", len(message.ScriptPubKey)/2)
 		RawTran.OutputList = append(RawTran.OutputList, message)
 	}
@@ -148,7 +146,7 @@ func InsertOutputPay(RawTran RawTransaction, PaytoMe uint64, Message string) (Ra
 	if tail != 0 {
 		total++
 		for i := 0; i < (64 - tail); i++ {
-			m = append(m, 0x00)
+			m = append(m, 0x20)
 		}
 	}
 
@@ -183,7 +181,7 @@ var BlockChain, _ = btcrpcclient.New(connCfg, nil)
 
 func SendRawTransaction(MsgTx *wire.MsgTx) (*wire.ShaHash, error) {
 	hash, err := BlockChain.SendRawTransaction(MsgTx, false)
-	fmt.Printf("hash is %v err is %v\r\n", hash, err)
+
 	return hash, err
 }
 
@@ -223,6 +221,7 @@ func CreateRawTransaction(PayAddress string, Message string) (*wire.MsgTx, uint6
 
 	RawTranReal, _ = InsertOutputPay(RawTranReal, (totalmoney - MinMoney + conf.MESSAGEFEE), Message)
 	serializeReal, _ := RawTranReal.ToSerialize()
+
 	MsgTxReal, _, _ := BlockChain.SignRawTransactionCMD(serializeReal)
 	MinMoney += uint64(MsgTxReal.SerializeSize()) / 1000 * conf.MESSAGEFEE
 	return MsgTxReal, MinMoney, nil

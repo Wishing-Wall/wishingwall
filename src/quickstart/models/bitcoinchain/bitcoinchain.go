@@ -6,7 +6,7 @@ import (
 	"github.com/btcsuite/btcd/btcjson"
 	"github.com/btcsuite/btcd/wire"
 	"github.com/btcsuite/btcrpcclient"
-	_ "github.com/btcsuite/btcutil"
+	"github.com/btcsuite/btcutil"
 )
 
 /*
@@ -66,8 +66,17 @@ func GetBlockByIndex(block_index uint64) (*btcjson.GetBlockVerboseResult, error)
 	}
 
 	return BlockChain.GetBlockVerbose(hash, true)
-
 }
+
+func GetRawBlock(block_index uint64) (*btcutil.Block, error) {
+	hash, err := BlockChain.GetBlockHash(int64(block_index))
+	if err != nil {
+		//return new(btcjson.GetBlockVerboseResult), err
+	}
+
+	return BlockChain.GetBlock(hash)
+}
+
 func GetBlockHashString(block_index uint64) (string, error) {
 	hash, err := BlockChain.GetBlockHash(int64(block_index))
 	/*

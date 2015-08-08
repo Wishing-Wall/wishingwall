@@ -11,29 +11,42 @@ import (
 	"strings"
 	"time"
 
-	"github.com/btcsuite/btcd/btcjson"
+	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/btcsuite/btcd/txscript"
+	"github.com/btcsuite/btcd/wire"
 )
+
+var startblockindex uint64 = 5
 
 var GlobalLastBlockIndex uint64
 var GlobalParsedBlockIndex uint64
+
 //this is a debug func
-func get_tx_info(tx *btcjson.TxRawResult, block_index uint64) (source,
+func get_tx_info(tx *wire.MsgTx, block_index uint64) (source,
 	destination string, btc_amount, fee uint64, data []string) {
 	var bFound bool = false
-	for _, value := range tx.Vout {
-		Address := value.ScriptPubKey.Addresses
+
+	for _, value := range tx.TxOut {
+		nettype := &chaincfg.MainNetParams
+		if conf.MainNet {
+			nettype = &chaincfg.MainNetParams
+		} else {
+			nettype = &chaincfg.RegressionNetParams
+		}
+		_, Address, _, _ := txscript.ExtractPkScriptAddrs(value.PkScript, nettype)
 
 		if len(Address) != 0 {
-			if Address[0] == conf.WISHINGWALLADDRESS {
-				fmt.Printf("Got one valied tx %v\r\n", tx.Hex)
-				fmt.Printf("the tx is %v\r\n", tx)
+			if Address[0].String() == conf.WISHINGWALLADDRESS {
+
 				bFound = true
 				continue
 			}
 		}
 		if bFound == true {
-			message := strings.Split(value.ScriptPubKey.Asm, " ")
-			fmt.Printf("message is %v\r\n", message)
+			tempasm, _ := txscript.DisasmString(value.PkScript)
+
+			message := strings.Split(tempasm, " ")
+
 			merge := message[1] + message[2]
 			data = append(data, merge)
 		}
@@ -47,18 +60,19 @@ func get_tx_info(tx *btcjson.TxRawResult, block_index uint64) (source,
 	}
 
 	//get source address
-	fmt.Printf("tx.Vin[0].Txid %v\r\n", tx.Vin[0].Txid)
-	if tx.Vin[0].Txid == "" {
+
+	if tx.TxIn[0].PreviousOutPoint.Index == 0 {
 		source = "coinbase"
 	} else {
-		SourceTx, _ := bitcoinchain.GetRawTransaction(tx.Vin[0].Txid)
-		fmt.Printf("sourcetx is %v\r\n", SourceTx)
+		SourceTx, _ := bitcoinchain.GetRawTransaction(tx.TxIn[0].PreviousOutPoint.Hash.String())
+
 		if SourceTx == nil {
 			source = "Unkonw"
 		} else {
-			for _, value := range SourceTx.Vout {
-				if value.N == tx.Vin[0].Vout {
-					source = value.ScriptPubKey.Addresses[0]
+			for _, prevalue := range SourceTx.Vout {
+
+				if prevalue.N == tx.TxIn[0].PreviousOutPoint.Index {
+					source = prevalue.ScriptPubKey.Addresses[0]
 				}
 			}
 		}
@@ -132,8 +146,9 @@ func GetMessageFromData(data string) (message_count,
 	temp, _ = strconv.Atoi(string(databyte[2:4]))
 	message_index = uint64(temp)
 	converbody, _ := hex.DecodeString(string(databyte[4:]))
-	//var converrune []rune = []rune(string(converbody))
+
 	message_body = string(converbody)
+
 	return message_count, message_index, message_body
 }
 
@@ -189,9 +204,9 @@ func Parse_tx(tran conf.DB_transaction) error {
 
 func Parse_block(block_index, block_time uint64, previous_ledger_hash,
 	previous_txlist_hash string) (string, string) {
-	fmt.Printf("Start to parse block[%d]\r\n", block_index)
+
 	trans, err := dbutil.GetAllTransInBlock(block_index)
-	fmt.Printf("all tran in block %d, %v\n", block_index, trans)
+
 	if err != nil {
 		var temp string
 		return temp, temp
@@ -234,10 +249,10 @@ func Follow() {
 		fmt.Println("block table in database is empty")
 	}
 	block_index++
-        fmt.Print("The last block_index++ in db is ", block_index)
-	if block_index < 363919 {
-		block_index = 363919
-        }
+	fmt.Print("The last block_index++ in db is ", block_index)
+	if block_index < startblockindex {
+		block_index = startblockindex
+	}
 	fmt.Printf("block_index is %v\r\n", block_index)
 
 	var dbtran conf.DB_transaction
@@ -254,13 +269,13 @@ func Follow() {
 			fmt.Printf("get tempblockcount failed %v\r\n", err)
 			continue
 		}
-                fmt.Printf("block_index is %v, templockcount is %v\r\n", block_index, tempblockcount)
+		//fmt.Printf("block_index is %v, templockcount is %v\r\n", block_index, tempblockcount)
 		GlobalParsedBlockIndex = block_index
 		if block_index <= tempblockcount {
 			c := block_index
 			requires_rollback := false
 			for {
-				if c == 363919 {
+				if c == startblockindex {
 					fmt.Printf("Reach the start...")
 					break
 				}
@@ -288,27 +303,26 @@ func Follow() {
 			block_hash, _ := bitcoinchain.GetBlockHashString(block_index)
 			block, _ := bitcoinchain.GetBlockByIndex(block_index)
 			block_time := block.Time
-			tx_hash_list := block.Tx
+
+			rawblock, _ := bitcoinchain.GetRawBlock(block_index)
+			all_transaction_in_block := rawblock.Transactions()
 			fmt.Printf("Insert block[%d] into db\r\n", block_index)
 
-			for _, tx_hash := range tx_hash_list {
-				fmt.Printf("Try to parse tx %v\r\n", tx_hash)
-				_, err := dbutil.GetTran(tx_hash)
+			for _, tx := range all_transaction_in_block {
+				fmt.Printf("Try to parse tx %v\r\n", tx.Sha())
+				_, err := dbutil.GetTran(tx.Sha().String())
 				if err == nil {
 					tx_index += 1
 					fmt.Printf("the tx_index[%d] already in db, next\r\n", tx_index-1)
 					continue
 				}
-				tx, err := bitcoinchain.GetRawTransaction(tx_hash)
-				if err != nil {
-					fmt.Printf("GetRawTransaction %v failed %v\r\n", tx_hash, err)
-					continue
-				}
-				source, destination, btc_amount, fee, data := get_tx_info(tx, block_index)
+				msgtx := tx.MsgTx()
+
+				source, destination, btc_amount, fee, data := get_tx_info(msgtx, block_index)
 				for _, value := range data {
 					if source != "" && (value != "" || destination == conf.WISHINGWALLADDRESS) {
 
-						dbutil.InsertTran(tx_index, tx_hash, block_index, block_hash, uint64(block_time), source, destination, btc_amount, fee, value)
+						dbutil.InsertTran(tx_index, tx.Sha().String(), block_index, block_hash, uint64(block_time), source, destination, btc_amount, fee, value)
 					}
 				}
 				tx_index += 1
@@ -317,8 +331,8 @@ func Follow() {
 			Parse_block(block_index, uint64(block_time), "", "")
 			block_index++
 		}
-		if block_index >= 363919 {
-			fmt.Printf("sleep 1 second\r\n")
+		if block_index >= startblockindex {
+			//fmt.Printf("sleep 1 second\r\n")
 			time.Sleep(1 * time.Second)
 		}
 	}

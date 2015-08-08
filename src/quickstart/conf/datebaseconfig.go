@@ -8,17 +8,18 @@ const DATABASEPATH string = "./database.db"
 
 const BLOCK_FIRST uint64 = 1
 
+const MainNet bool = true
+
 //main net
 const WISHINGWALLADDRESS string = "12xrHyaQwTJvEi5F1vsbHzYco35f1ySr8Y"
 
-// pubkey 0250728e80135b12c92f03ed6b3ccb7f3b8e8c5fffca907f3d94a2a05aa6849e90
+//pubkey 0250728e80135b12c92f03ed6b3ccb7f3b8e8c5fffca907f3d94a2a05aa6849e90
 const PAYTOWISHINGWALL string = "76a914158826b112af82a7c2055c9c275638fb35d6dfcc88ac"
 
 //testnet
-//const WISHINGWALLADDRESS string = "mwn9HEbcjFuxZd9AZZZsLjPKVRhPxGEXV2"
+//const WISHINGWALLADDRESS string = "mjmhCwP4ngoRqHYffbvKixJ59cxyoBCQHM"
+//const PAYTOWISHINGWALL string = "76a9142eaa25c6eeaabb04d20627d49bb00fec99a3a9b488ac"
 
-//const PAYTOWISHINGWALL string = "OP_DUP OP_HASH160 b2616c2a516f75fa26896919cb52602338a71308 OP_EQUALVERIFY OP_CHECKSIG"
-//const PAYTOWISHINGWALL string = "76a914b2616c2a516f75fa26896919cb52602338a7130888ac"
 const COIN uint64 = 100000000
 const MESSAGEFEE uint64 = 10860
 

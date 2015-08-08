@@ -52,12 +52,12 @@ func SendLoop() {
 		//fmt.Printf("found unsendlist %v\r\n", UnSendList)
 		for _, spent := range UnspentList {
 			for _, send := range UnSendList {
-				fmt.Printf("spent addr %v, send addr %v\r\n", spent.Address, send.RelayAddr)
+				//fmt.Printf("spent addr %v, send addr %v\r\n", spent.Address, send.RelayAddr)
 
 				if spent.Address == send.RelayAddr {
 
 					amount := uint64(spent.Amount * float64(conf.COIN))
-					fmt.Printf("amount is %v, Minmoney is %v\r\n", amount, send.MinMoney)
+					//fmt.Printf("amount is %v, Minmoney is %v\r\n", amount, send.MinMoney)
 					if amount >= send.MinMoney {
 						err = SendMessage(send)
 						if err != nil {
