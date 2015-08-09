@@ -51,7 +51,6 @@ func get_tx_info(tx *wire.MsgTx, block_index uint64) (source,
 			data = append(data, merge)
 		}
 	}
-
 	if bFound == true {
 		destination = conf.WISHINGWALLADDRESS
 	} else {
@@ -62,7 +61,7 @@ func get_tx_info(tx *wire.MsgTx, block_index uint64) (source,
 	//get source address
 
 	if tx.TxIn[0].PreviousOutPoint.Index == 0 {
-		source = "coinbase"
+		source = string(block_index)
 	} else {
 		SourceTx, _ := bitcoinchain.GetRawTransaction(tx.TxIn[0].PreviousOutPoint.Hash.String())
 
@@ -113,6 +112,17 @@ func UpdateMessagePool(messageS polls) ([]polls, error) {
 	return newpolls, nil
 }
 
+
+func HexToInt(data byte) uint64 {
+       if data >= 48 && data <= 57 {
+               return uint64(data - 48)
+       } else if data >= 97 && data <= 102 {
+               return uint64(data - 97 + 10)
+       }
+       return 0
+}
+
+
 func GetMessageFromPoolBySource(source string) (polls, error) {
 
 	for _, messageS := range message_pool {
@@ -141,11 +151,10 @@ func DeleteMessageFromPoolBySource(source string) ([]polls, error) {
 func GetMessageFromData(data string) (message_count,
 	message_index uint64, message_body string) {
 	databyte := []byte(data)
-	temp, _ := strconv.Atoi(string(databyte[0:2]))
-	message_count = uint64(temp)
-	temp, _ = strconv.Atoi(string(databyte[2:4]))
-	message_index = uint64(temp)
-	converbody, _ := hex.DecodeString(string(databyte[4:]))
+        message_count = HexToInt(databyte[0])*10 + HexToInt(databyte[1])
+        message_index = HexToInt(databyte[2])*10 + HexToInt(databyte[3])
+	
+        converbody, _ := hex.DecodeString(string(databyte[4:]))
 
 	message_body = string(converbody)
 
@@ -331,7 +340,7 @@ func Follow() {
 			Parse_block(block_index, uint64(block_time), "", "")
 			block_index++
 		}
-		if block_index >= startblockindex {
+		if block_index >= GlobalLastBlockIndex - 2 {
 			//fmt.Printf("sleep 1 second\r\n")
 			time.Sleep(1 * time.Second)
 		}

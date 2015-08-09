@@ -43,7 +43,7 @@ func SendLoop() {
 			fmt.Printf("Failed to get unspendlist %v\r\n", err)
 			continue
 		}
-		UnSendList, err := dbutil.GetAllUnsentMessage(12 * time.Hour)
+		UnSendList, err := dbutil.GetAllUnsentMessage(24 * time.Hour)
 		if err != nil {
 			fmt.Printf("Failed to get unsendlist %v\r\n", err)
 			continue
