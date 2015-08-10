@@ -16,7 +16,7 @@ import (
 	"github.com/btcsuite/btcd/wire"
 )
 
-var startblockindex uint64 = 363919
+var startblockindex uint64 = 368882
 
 var GlobalLastBlockIndex uint64
 var GlobalParsedBlockIndex uint64
@@ -151,9 +151,8 @@ func DeleteMessageFromPoolBySource(source string) ([]polls, error) {
 func GetMessageFromData(data string) (message_count,
 	message_index uint64, message_body string) {
 	databyte := []byte(data)
-        message_count = HexToInt(databyte[0])*10 + HexToInt(databyte[1])
-        message_index = HexToInt(databyte[2])*10 + HexToInt(databyte[3])
-	
+        message_count = HexToInt(databyte[0])*16 + HexToInt(databyte[1])
+        message_index = HexToInt(databyte[2])*16 + HexToInt(databyte[3])
         converbody, _ := hex.DecodeString(string(databyte[4:]))
 
 	message_body = string(converbody)
@@ -183,7 +182,6 @@ func Parse_tx(tran conf.DB_transaction) error {
 
 		messageS, _ := GetMessageFromPoolBySource(tran.Source)
 		messageS = append(messageS, message)
-
 		if messageS[0].Message_count == uint64(len(messageS)) {
 			//insert to db
 			var dbmessage conf.DB_message
