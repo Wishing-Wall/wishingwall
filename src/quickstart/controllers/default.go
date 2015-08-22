@@ -16,19 +16,6 @@ type MainController struct {
 }
 
 func (c *MainController) Post() {
-	/*
-		o := orm.NewOrm()
-		o.Using("default")
-		// get Relaye addr
-		send := new(DB_send)
-		send.Message = c.GetString("clientmessage")
-		fmt.Printf("client message is %v", send.Message)
-		send.RelayAddr = send.Message + "testaddr"
-
-		send.IsSent = false
-
-		o.Insert(send)
-	*/
 	message := c.GetString("clientmessage")
 	replyaddress, err := wallet.GetNewAddress()
 	if err != nil {
@@ -88,7 +75,7 @@ func (c *MainController) Get() {
 	c.Data["preend"] = preend
 	c.Data["nextstart"] = nextstart
 	c.Data["nextend"] = nextend
-	c.Data["maxblockindex"] = protocol.GlobalLastBlockIndex 
+	c.Data["maxblockindex"] = protocol.GlobalLastBlockIndex
 	c.Data["parsedblockindex"] = protocol.GlobalParsedBlockIndex - 1
 	c.TplNames = "index.tpl"
 }
