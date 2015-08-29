@@ -14,19 +14,24 @@
             var posy = 0;
 			var posx = 0;
             
-			var linespace = 1;
+			var linespace = 5;
+			var fontSize = 50;
             var fontWeight = 'normal';
             var canvas = $("canvas");
 
 			eachlinetxt = txt.split('\r')
-			console.log("length is ",eachlinetxt[0].length )
-			var fontSize =  eachlinetxt[0].length;
+			console.log("eachlinetxt[0].length is ",eachlinetxt[0].length)
+			console.log("eachlientxt.length is ", eachlinetxt.length)
 
-            canvas.width = fontSize * 3;
-            canvas.height = eachlinetxt.length;
+            canvas.width = fontSize * eachlinetxt[0].length;
+            canvas.height = linespace * eachlinetxt.length;
+			console.log("canvas.width ", canvas.width)
+			console.log("canvas.height ", canvas.height)
+			
+			
             var context = canvas.getContext('2d');
             context.clearRect(0, 0, canvas.width, canvas.height);
-            context.font = fontWeight +  fontSize  + 'px sans-serif';
+            context.font = fontWeight +  fontSize  + 'px Lucida Console';
             //context.textBaseline = 'top';
             canvas.style.display = 'none';
             function fillTxt(text) {
@@ -40,14 +45,15 @@
 			
 			return canvas.toDataURL("image/png");
         }
+	
 		function TxtOrImg(val) {
 			for (var j = 0; j < val.length; j++) {
 				var body = $("txtorimg" + val[j].Id)
 				if (val[j].BImg == 1)
 				{
-					body.innerHTML = "<img src=\"" + textToImg(val[j].Message) + "\" class=\"img-responsive\" />"
+					body.innerHTML = "<div class=\"panel-body\"><pre><img src=\"" + textToImg(val[j].Message) + "\" class=\"img-responsive\" /></pre></div>"
 				}else{
-					body.innerHTML = "<pre>" + val[j].Message + "</pre>"
+					body.innerHTML = "<div  class=\"panel-body\"><pre>" + val[j].Message + "</pre></div>"
 				}
 				
 			}
@@ -74,7 +80,7 @@
 			{{range $key, $val := .messages}}
 				<div class="panel panel-primary">
 					<div class="panel-heading ">{{$val.Id}}:</div>
-   					<div id="txtorimg{{$val.Id}}" class="panel-body"></div>
+   					<div id="txtorimg{{$val.Id}}"></div>
 				</div>
 			{{end}}
 	</div>
