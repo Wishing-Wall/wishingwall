@@ -6,7 +6,6 @@ package conf
 
 const DATABASEPATH string = "./database.db"
 
-
 const MainNet bool = true
 
 //main net
@@ -44,6 +43,7 @@ type DB_message struct {
 	Destination      string
 	Message          string //the combine of message_body in many tran.Data
 	BHidden          int
+	BImg             int
 }
 type DB_messages []DB_message
 
