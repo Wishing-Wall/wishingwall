@@ -14,8 +14,8 @@
             var posy = 0;
 			var posx = 0;
             
-			var linespace = 5;
-			var fontSize = 50;
+			var linespace = 8;
+			var fontSize = 8;
             var fontWeight = 'normal';
             var canvas = $("canvas");
 
@@ -31,12 +31,15 @@
 			
             var context = canvas.getContext('2d');
             context.clearRect(0, 0, canvas.width, canvas.height);
-            context.font = fontWeight +  fontSize  + 'px Lucida Console';
+            context.font = fontSize  + 'px Lucida Console';
             //context.textBaseline = 'top';
             canvas.style.display = 'none';
             function fillTxt(text) {
-                context.fillText(text, 0, linespace * posy++, canvas.width);
-            }
+		for (var i = 0; i < text.length; i++) {
+                	context.fillText(text[i], i * fontSize, linespace * posy, canvas.width);
+                }
+		posy ++
+	    }
 
             for ( var j = 0; j < eachlinetxt.length; j++) {
                 fillTxt(eachlinetxt[j]);
