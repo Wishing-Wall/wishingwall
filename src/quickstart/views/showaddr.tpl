@@ -26,8 +26,11 @@
 					{{.address}}
 				</h1>
 				<h1 class="text-center">
-					Your message will be "written" on Blockchain after 2 confirms
+					Your message will be "written" on Blockchain after 4 confirms, This usually takes a long time, please be patient. 
 				</h1>
+				<h1 class="text-center">
+					Do Not have bitcoin ? Send your wishes to johnsonbernoulli@gmail.com to start a artificial service.
+                                </h1>
 			</div>
 		</div>
 	</div>

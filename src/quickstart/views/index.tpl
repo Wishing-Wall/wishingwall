@@ -86,6 +86,8 @@
 	</div>
 </div>
 
+			<iframe src="//serve.adverti.io/code/560a95b454ca7" scrolling="no" style="width:728px;height:90px;border:0px;padding:0;overflow:hidden;" allowtransparency="true"></iframe>
+
 <canvas id="canvas"></canvas>
 
 
@@ -134,6 +136,9 @@
 			<p class="text-info text-center">
 				<em>The Block Chain Height :</em> {{.maxblockindex}}
 				<em>Wishing Wall Reached : </em> {{.parsedblockindex}}
+			</p>
+			<p class="text-info text-center">
+				Donate: 1N7bgRWwojCCBC1mwDwt8kUF3TP7ar9Vu1
 			</p>
 		</div>
 	</div>
