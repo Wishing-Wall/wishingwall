@@ -1,13 +1,13 @@
 package controllers
 
 import (
+	"strings"
 	"fmt"
 	"quickstart/conf"
 	"quickstart/models/dbutil"
 	"quickstart/models/protocol"
 	"quickstart/models/wallet"
 	"sort"
-
 	"github.com/astaxie/beego"
 )
 
@@ -23,6 +23,12 @@ func (c *MainController) Post() {
 	}
 
 	_, minmoney, err := wallet.CreateRawTransaction(replyaddress, message)
+	if strings.EqualFold(err.Error(), string("too-long-message")) {
+		fmt.Printf("jump to toolongmessage")
+		c.Ctx.Redirect(301, string("toolongmessage"))
+		return
+	}
+
 
 	dbutil.InsertSend(replyaddress, message, minmoney)
 
@@ -91,4 +97,12 @@ func (c *ShowAddrController) Get() {
 	c.Data["minmoney"] = minmoney
 
 	c.TplNames = "showaddr.tpl"
+}
+
+type TooLongMessage struct {
+	beego.Controller
+}
+
+func (c *TooLongMessage) Get() {
+	c.TplNames = "toolongmessage.tpl"
 }

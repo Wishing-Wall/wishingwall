@@ -105,6 +105,10 @@ func InsertOutputMinMoney(RawTran RawTransaction, Message string) (RawTransactio
 	// total[1] + index[1] + 31 + 33
 	var total = len(m) / 64
 
+	if total > 158 {
+		return RawTran, fee,  errors.New("too-long-message")
+	}
+
 	var tail = len(m) % 64
 	if tail != 0 {
 		total++
@@ -202,7 +206,10 @@ func CreateRawTransaction(PayAddress string, Message string) (*wire.MsgTx, uint6
 	RawTranTry := GetEmptyRawTransacton()
 	RawTranTry, _ = InsertInput(RawTranTry, tx)
 
-	RawTranTry, MinMoney, _ := InsertOutputMinMoney(RawTranTry, Message)
+	RawTranTry, MinMoney, err := InsertOutputMinMoney(RawTranTry, Message)
+	if err != nil {
+		return nil, MinMoney, err	
+	}
 	serializeTry, _ := RawTranTry.ToSerialize()
 	MsgTx, _, _ := BlockChain.SignRawTransactionCMD(serializeTry)
 

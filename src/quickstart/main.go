@@ -3,7 +3,7 @@ package main
 import (
 	_ "fmt"
 
-	"quickstart/models/protocol"
+	  "quickstart/models/protocol"
 	_ "quickstart/routers"
 
 	"github.com/astaxie/beego"
