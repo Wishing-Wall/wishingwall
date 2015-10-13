@@ -17,47 +17,57 @@
     <link href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
     <script src="http://apps.bdimg.com/libs/jquery/2.0.0/jquery.min.js"></script>
     <script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-	<script type="text/javascript">
+    <script type="text/javascript">
         function $(id) {
             return document.getElementById(id);
         }
         function textToImg(txt) {
             var posy = 0;
-			var posx = 0;
+            var posx = 0;
             
-			var linespace = 8;
-			var fontSize = 8;
+            var linespace = 8;
+            var fontSize = 8;
             var fontWeight = 'normal';
             var canvas = $("canvas");
 
-			eachlinetxt = txt.split('\r')
-			console.log("eachlinetxt[0].length is ",eachlinetxt[0].length)
-			console.log("eachlientxt.length is ", eachlinetxt.length)
-
-            canvas.width = fontSize * eachlinetxt[0].length;
+            eachlinetxt = txt.split('\n')
+            var maxlength = 0;
+            for (var i = 0; i < eachlinetxt.length; i++)
+            {
+                if (eachlinetxt[i].length > maxlength)
+                {
+                    maxlength = eachlinetxt[i].length
+                }
+            }
+            canvas.width = fontSize * maxlength;
             canvas.height = linespace * eachlinetxt.length;
-			console.log("canvas.width ", canvas.width)
-			console.log("canvas.height ", canvas.height)
-			
-			
             var context = canvas.getContext('2d');
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.font = fontSize  + 'px Lucida Console';
             //context.textBaseline = 'top';
             canvas.style.display = 'none';
             function fillTxt(text) {
-		for (var i = 0; i < text.length; i++) {
-                	context.fillText(text[i], i * fontSize, linespace * posy, canvas.width);
+                for (var i = 0; i < maxlength; i++) {
+                    if (i > text.length) {
+                        context.fillText(" ", i * fontSize, linespace * posy, canvas.width);
+                    }else {
+                        if (typeof(text[i]) == "undefined") {
+                            context.fillText(" ", i * fontSize, linespace * posy, canvas.width);
+                        }else{
+                            context.fillText(text[i], i * fontSize, linespace * posy, canvas.width);
+                        }
+                    }
                 }
-		posy ++
-	    }
 
+                posy ++
+            }
+            //walk around
+            fillTxt(eachlinetxt[0])
             for ( var j = 0; j < eachlinetxt.length; j++) {
                 fillTxt(eachlinetxt[j]);
             }
             var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-			
-			return canvas.toDataURL("image/png");
+            return canvas.toDataURL("image/png");
         }
 	
 		function TxtOrImg(val) {
